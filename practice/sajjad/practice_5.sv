@@ -1,4 +1,4 @@
-module hw_5;
+module practice_5;
 
 module dump_select_module;
   reg signal_A, signal_B, signal_C;
@@ -11,5 +11,6 @@ module dump_select_module;
   end
 endmodule
 // Solution: 'select_wave.vcd' will only contain waveform data for 'signal_A'.
+
 
 endmodule

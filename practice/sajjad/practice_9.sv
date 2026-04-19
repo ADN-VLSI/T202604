@@ -1,4 +1,5 @@
-module hw_9;
+module practice_9;
+
 initial begin
   #50ns $display("Simulation about to pause at 50ns.");
   $stop;

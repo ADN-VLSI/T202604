@@ -1,5 +1,4 @@
-module hw_7;
-
+module practice_7;
 initial begin
   #12.345ns $display("Real Time with precision: %0.3f ns", $realtime);
 end

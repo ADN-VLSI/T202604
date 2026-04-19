@@ -1,4 +1,5 @@
-module hw_3;
+module practice_3;
+
 reg a, b, result_strobe, result_display;
 assign result_strobe = a & b;
 assign result_display = a | b;
@@ -12,5 +13,6 @@ end
 // Solution Output (Order may vary slightly depending on simulator):
 // Display: Time=5, OR=0  // May show intermediate value if display happens before assignment settles
 // Strobe: Time=5, AND=1   // Shows stable AND value at the end of time step
+
 
 endmodule

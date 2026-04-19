@@ -1,5 +1,6 @@
-module hw_4;
-    module wave_module;
+module practice_4;
+
+module wave_module;
   reg clock;
   initial begin
     $dumpfile("my_wave.vcd");
@@ -7,11 +8,12 @@ module hw_4;
     clock = 0;
     forever #10 clock = ~clock;
   end
-  initial begin
+  intial begin
     #1000;
-    $finish;
+    $finish
   end
 endmodule
 // Solution: Simulating this will create 'my_wave.vcd' in your simulation directory. Open it with a waveform viewer to see the 'clock' signal.
+
 
 endmodule

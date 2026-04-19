@@ -1,4 +1,5 @@
-module hw_6;
+module practice_6;
+
 initial begin
   $display("Start Time: %0t ns", $time);
   #25ns $display("Time after 25ns delay: %0t ns", $time);
