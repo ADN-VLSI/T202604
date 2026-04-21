@@ -11,12 +11,12 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="10.001 ns"></ZoomEndTime>
-      <Cursor1Time time="1.447 ns"></Cursor1Time>
+      <ZoomEndTime time="40.001 ns"></ZoomEndTime>
+      <Cursor1Time time="40.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="163"></NameColumnWidth>
-      <ValueColumnWidth column_width="104"></ValueColumnWidth>
+      <ValueColumnWidth column_width="100"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="2" />
    <wvobject fp_name="group10" type="group">
@@ -26,22 +26,26 @@
       <wvobject fp_name="/potato_tb/tb_a" type="array">
          <obj_property name="ElementShortName">tb_a[3:0]</obj_property>
          <obj_property name="ObjectShortName">tb_a[3:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/potato_tb/tb_b" type="array">
          <obj_property name="ElementShortName">tb_b[3:0]</obj_property>
          <obj_property name="ObjectShortName">tb_b[3:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/potato_tb/tb_op" type="array">
          <obj_property name="ElementShortName">tb_op[1:0]</obj_property>
          <obj_property name="ObjectShortName">tb_op[1:0]</obj_property>
          <obj_property name="CustomSignalColor">#FFFF00</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/potato_tb/tb_c" type="array">
          <obj_property name="ElementShortName">tb_c[3:0]</obj_property>
          <obj_property name="ObjectShortName">tb_c[3:0]</obj_property>
          <obj_property name="CustomSignalColor">#FFA500</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group9" type="group">
