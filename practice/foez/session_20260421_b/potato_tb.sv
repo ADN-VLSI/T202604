@@ -40,7 +40,9 @@ module potato_tb;
         $fatal(1, "Error: AND operation failed for a=%b, b=%b, c=%b", tb_a, tb_b, tb_c);
       end
 
-      3'b010: begin
+      3'b010:
+      if (tb_c !== '0) begin
+        $fatal(1, "Error: NOP operation failed for a=%b, b=%b, c=%b", tb_a, tb_b, tb_c);
       end
 
       3'b011:
@@ -58,7 +60,9 @@ module potato_tb;
         $fatal(1, "Error: NAND operation failed for a=%b, b=%b, c=%b", tb_a, tb_b, tb_c);
       end
 
-      3'b110: begin
+      3'b110:
+      if (tb_c !== '0) begin
+        $fatal(1, "Error: NOP operation failed for a=%b, b=%b, c=%b", tb_a, tb_b, tb_c);
       end
 
       3'b111:
