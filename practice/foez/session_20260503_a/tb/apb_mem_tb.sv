@@ -13,6 +13,8 @@ module apb_mem_tb;
   localparam int LOCAL_ADDR_WIDTH = 10;
   localparam int LOCAL_DATA_WIDTH = 32;
 
+  localparam bit debug = 1'b1;
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // SIGNALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,8 +72,28 @@ module apb_mem_tb;
     do @(posedge clk);
     while (!pready);
     psel <= 1'b0;
-    penable <= 1'b0;
     data = prdata;
+    if (debug) $display("Read from address 0x%8h: 0x%8h", addr, data);
+  endtask
+
+  task automatic write(
+    input logic [LOCAL_ADDR_WIDTH-1:0] addr,
+    input logic [LOCAL_DATA_WIDTH-1:0] data,
+    input logic [(LOCAL_DATA_WIDTH / 8)-1:0] strobe = '1
+  );
+    @(posedge clk);
+    psel    <= 1'b1;
+    penable <= 1'b0;
+    paddr   <= addr;
+    pwrite  <= 1'b1;
+    pwdata  <= data;
+    pstrb   <= strobe;
+    @(posedge clk);
+    penable <= 1'b1;
+    do @(posedge clk);
+    while (!pready);
+    psel <= 1'b0;
+    if (debug) $display("Wrote to address 0x%8h: 0x%8h (strb 0b%4b)", addr, data, strobe);
   endtask
   
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,10 +119,10 @@ module apb_mem_tb;
 
     #100ns;
 
-    `MEMORY(3) = 'hf0;
-    `MEMORY(2) = 'h0d;
-    `MEMORY(1) = 'hca;
-    `MEMORY(0) = 'hfe;
+    // `MEMORY(3) = 'hf0;
+    // `MEMORY(2) = 'h0d;
+    // `MEMORY(1) = 'hca;
+    // `MEMORY(0) = 'hfe;
 
     fork
       forever begin
@@ -108,10 +130,15 @@ module apb_mem_tb;
       end
     join_none
 
+    write(3, 'hf0, 'b0001);
+    write(2, 'h0d, 'b0001);
+    write(1, 'hca, 'b0001);
+    write(0, 'hfe, 'b0001);
+
     for (int i = 0; i < 5; i++) begin
       logic [LOCAL_DATA_WIDTH-1:0] data;
       read(i, data);
-      $display("Read from address %0h: %0h", i, data);
+      // $display("Read from address %0h: %0h", i, data);
     end
 
     $finish;
