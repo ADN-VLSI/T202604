@@ -69,6 +69,7 @@ module apb_mem_tb;
     penable <= 1'b1;
     do @(posedge clk);
     while (!pready);
+    psel <= 1'b0;
     penable <= 1'b0;
     data = prdata;
   endtask
