@@ -1,15 +1,15 @@
 // | Opcode | Operation   |
 // |--------|-------------|
-// | 2'b00  | Bitwise OR  |
-// | 2'b01  | Bitwise AND |
-// | 2'b10  | Addition    |
-// | 2'b11  | Bitwise XOR |
+// | 3'b00  | Bitwise OR  |
+// | 3'b01  | Bitwise AND |
+// | 3'b10  | Addition    |
+// | 3'b11  | Bitwise XOR |
 
 module potato_tb;
 
   logic [3:0] tb_a;
   logic [3:0] tb_b;
-  logic [1:0] tb_op;
+  logic [2:0] tb_op;
   logic [3:0] tb_c;
 
   potato dut (
@@ -28,22 +28,22 @@ module potato_tb;
   function automatic void check();
     case (tb_op)
 
-      2'b00:
+      3'b000:
       if (tb_c !== (tb_a | tb_b)) begin
         $fatal(1, "Error: OR  operation failed for a=%b, b=%b, c=%b", tb_a, tb_b, tb_c);
       end
 
-      2'b01:
+      3'b001:
       if (tb_c !== (tb_a & tb_b)) begin
         $fatal(1, "Error: AND operation failed for a=%b, b=%b, c=%b", tb_a, tb_b, tb_c);
       end
 
-      2'b10:
+      3'b100:
       if (tb_c !== (4'b1111 & (tb_a + tb_b))) begin
         $fatal(1, "Error: ADD operation failed for a=%b, b=%b, c=%b", tb_a, tb_b, tb_c);
       end
 
-      2'b11:
+      3'b111:
       if (tb_c !== (tb_a ^ tb_b)) begin
         $fatal(1, "Error: XOR operation failed for a=%b, b=%b, c=%b", tb_a, tb_b, tb_c);
       end
