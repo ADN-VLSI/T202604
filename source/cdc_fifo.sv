@@ -17,10 +17,45 @@ module cdc_fifo #(
 
 );
 
-  logic [SIZE:0] wr_addr;
-  logic          wr_en;
 
-  logic [SIZE:0] rd_addr;
+  /* verilog_format: off */
+  logic          common_arst_ni;
+
+  //             SIGNAL    // CLOCK   // FORMAT // DESCRIPTION
+  //-----------------------//---------//--------//-------------------------------------------
+  logic [SIZE:0] wr_addr;  // in_clk  // binary // Write pointer 
+  logic [SIZE:0] wr_addr_; // out_clk // binary // Write pointer 
+  logic [SIZE:0] wpgi;     // in_clk  // gray   // Write pointer reg in
+  logic [SIZE:0] wpgo;     // out_clk // gray   // Write pointer reg out
+  logic [SIZE:0] wp_pass;  // in_clk  // gray   // Write pointer that will cross clock domain
+  logic          wr_en;    // in_clk  //        // Write enable
+
+  //             SIGNAL    // CLOCK   // FORMAT // DESCRIPTION
+  //-----------------------//---------//--------//-------------------------------------------
+  logic [SIZE:0] rd_addr;  // out_clk // binary // Read pointer 
+  logic [SIZE:0] rd_addr_; // in_clk  // binary // Read pointer 
+  logic [SIZE:0] rpgi;     // out_clk // gray   // Read pointer reg in
+  logic [SIZE:0] rpgo;     // in_clk  // gray   // Read pointer reg out
+  logic [SIZE:0] rp_pass;  // out_clk // gray   // Read pointer that will cross clock domain
+  logic [SIZE:0] rd_en;    // out_clk //        // Read enable
+  /* verilog_format: on */
+
+
+  always_ff @(posedge data_in_clk_i or negedge common_arst_ni) begin
+    if (~common_arst_ni) begin
+      wp_pass <= '0;
+    end else begin
+      wp_pass <= wpgi;
+    end
+  end
+
+  always_ff @(posedge data_out_clk_i or negedge common_arst_ni) begin
+    if (~common_arst_ni) begin
+      rp_pass <= '0;
+    end else begin
+      rp_pass <= rpgi;
+    end
+  end
 
   generic_dp_mem #(
       .ADDR_WIDTH(SIZE),
@@ -35,10 +70,63 @@ module cdc_fifo #(
   );
 
   bin_to_gray #(
-    .N(SIZE+1)
-) (
-    .bin_i(wr_addr),
-    .gray_o()
-);
+      .N(SIZE + 1)
+  ) b2g_w (
+      .bin_i (wr_addr + 1),
+      .gray_o()
+  );
+
+  bin_to_gray #(
+      .N(SIZE + 1)
+  ) b2g_r (
+      .bin_i (rd_addr + 1),
+      .gray_o()
+  );
+
+  gray_to_bin #(
+      .N(SIZE + 1)
+  ) g2b_wi (
+      .gray_i(wp_pass),
+      .bin_o (wr_addr)
+  );
+
+  gray_to_bin #(
+      .N(SIZE + 1)
+  ) g2b_ro (
+      .gray_i(rp_pass),
+      .bin_o (rd_addr)
+  );
+
+  gray_to_bin #(
+      .N(SIZE + 1)
+  ) g2b_wo (
+      .gray_i(wpgo),
+      .bin_o (wr_addr_)
+  );
+
+  gray_to_bin #(
+      .N(SIZE + 1)
+  ) g2b_ri (
+      .gray_i(rpgo),
+      .bin_o (rd_addr_)
+  );
+
+  dual_edge_reg #(
+      .WIDTH(SIZE + 1)
+  ) rd_ptr_ic (
+      .arst_ni(common_arst_ni),
+      .clk_i  (data_in_clk_i),
+      .d_i    (rd_pass),
+      .q_o    (rd_addr_)
+  );
+
+  dual_edge_reg #(
+      .WIDTH(SIZE + 1)
+  ) wr_ptr_oc (
+      .arst_ni(common_arst_ni),
+      .clk_i  (data_out_clk_i),
+      .d_i    (wp_pass),
+      .q_o    (wr_addr_)
+  );
 
 endmodule
