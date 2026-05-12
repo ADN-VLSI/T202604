@@ -130,13 +130,13 @@ module apb_mem_tb;
       end
     join_none
 
-    write(3, 'hf0, 'b0001);
-    write(2, 'h0d, 'b0001);
-    write(1, 'hca, 'b0001);
-    write(0, 'hfe, 'b0001);
+    write(3, 'hf0, );
+    write(2, 'h0d, );
+    write(1, 'hca, );
+    write(0, 'hfe, );
 
     for (int i = 0; i < 5; i++) begin
-      logic [LOCAL_DATA_WIDTH-1:0] data;
+      logic [LOCAL_DATA_WIDTH-1:0] data; 
       read(i, data);
       // $display("Read from address %0h: %0h", i, data);
     end
