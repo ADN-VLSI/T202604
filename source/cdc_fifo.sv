@@ -29,6 +29,8 @@ module cdc_fifo #(
   logic [SIZE:0] wpgo;     // out_clk // gray   // Write pointer reg out
   logic [SIZE:0] wp_pass;  // in_clk  // gray   // Write pointer that will cross clock domain
   logic          wr_en;    // in_clk  //        // Write enable
+  logic          meq_ic;   // in_clk  //        // MSB of write pointer equals MSB of read pointer
+  logic          nmeq_ic;  // in_clk  //        // NON-MSB of write pointer equals NON-MSB of read pointer
 
   //             SIGNAL    // CLOCK   // FORMAT // DESCRIPTION
   //-----------------------//---------//--------//-------------------------------------------
@@ -38,13 +40,28 @@ module cdc_fifo #(
   logic [SIZE:0] rpgo;     // in_clk  // gray   // Read pointer reg out
   logic [SIZE:0] rp_pass;  // out_clk // gray   // Read pointer that will cross clock domain
   logic [SIZE:0] rd_en;    // out_clk //        // Read enable
+  logic          meq_oc;   // out_clk //        // MSB of write pointer equals MSB of read pointer
+  logic          nmeq_oc;  // out_clk //        // NON-MSB of write pointer equals NON-MSB of read pointer
   /* verilog_format: on */
 
+  always_comb common_arst_ni = data_in_arst_ni & data_out_arst_ni;
+
+  always_comb meq_ic = (wr_addr[SIZE] == rd_addr_[SIZE]);
+  always_comb nmeq_ic = (wr_addr[SIZE-1:0] == rd_addr_[SIZE-1:0]);
+
+  always_comb meq_oc = (wr_addr_[SIZE] == rd_addr[SIZE]);
+  always_comb nmeq_oc = (wr_addr_[SIZE-1:0] == rd_addr[SIZE-1:0]);
+
+  always_comb data_in_ready_o = (meq_ic | ~nmeq_ic);
+  always_comb data_out_valid_o = (~meq_oc | ~nmeq_oc);
+
+  always_comb wr_en = data_in_valid_i & data_in_ready_o;
+  always_comb rd_en = data_out_valid_o & data_out_ready_i;
 
   always_ff @(posedge data_in_clk_i or negedge common_arst_ni) begin
     if (~common_arst_ni) begin
       wp_pass <= '0;
-    end else begin
+    end else if (wr_en) begin
       wp_pass <= wpgi;
     end
   end
@@ -52,7 +69,7 @@ module cdc_fifo #(
   always_ff @(posedge data_out_clk_i or negedge common_arst_ni) begin
     if (~common_arst_ni) begin
       rp_pass <= '0;
-    end else begin
+    end else if (rd_en) begin
       rp_pass <= rpgi;
     end
   end
