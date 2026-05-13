@@ -136,7 +136,7 @@ module apb_mem_tb;
     write(0, 'hfe, 'b0001);
 
     for (int i = 0; i < 5; i++) begin
-      logic [LOCAL_DATA_WIDTH-1:0] data; 
+      logic [LOCAL_DATA_WIDTH-1:0] data;
       read(i, data);
       // $display("Read from address %0h: %0h", i, data);
     end
