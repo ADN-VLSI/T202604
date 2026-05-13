@@ -20,4 +20,35 @@ module regif (
 
   // YOUR CODE HERE
 
+  always_comb begin
+    if (addr_i == 3'h0) rdata_o = reg0_i;
+    else if (addr_i == 3'h1) rdata_o = reg1_i;
+    else if (addr_i == 3'h2) rdata_o = reg2_i;
+    else if (addr_i == 3'h3) rdata_o = reg3_i;
+    else if (addr_i == 3'h4) rdata_o = reg4_o;
+    else if (addr_i == 3'h5) rdata_o = reg5_o;
+    else if (addr_i == 3'h6) rdata_o = reg6_o;
+    else if (addr_i == 3'h7) rdata_o = reg7_o;
+    else rdata_o = 32'b0;
+  end
+
+  always_ff @(posedge clk_i or negedge arst_ni) begin
+    if (arst_ni == 1'b0) begin
+      reg4_o <= 32'b0;
+      reg5_o <= 32'b0;
+      reg6_o <= 32'h0;
+      reg7_o <= 32'h0;
+    end else begin
+      if (we_i == 1'b1) begin
+        if (addr_i == 3'h4) reg4_o <= wdata_i;
+        if (addr_i == 3'h5) reg5_o <= wdata_i;
+        if (addr_i == 3'h6) reg6_o <= wdata_i;
+        if (addr_i == 3'h7) reg7_o <= wdata_i;
+      end
+    end
+  end
+
+
+  assign error_o = (we_i == 1'b1 && addr_i < 3'h4) ? 1'b1 : 1'b0;
+
 endmodule
