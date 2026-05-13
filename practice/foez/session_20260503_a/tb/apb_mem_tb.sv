@@ -130,10 +130,10 @@ module apb_mem_tb;
       end
     join_none
 
-    write(3, 'hf0, );
-    write(2, 'h0d, );
-    write(1, 'hca, );
-    write(0, 'hfe, );
+    write(3, 'hf0, 'b0001);
+    write(2, 'h0d, 'b0010);
+    write(1, 'hca, 'b0100);
+    write(0, 'hfe, 'b1000);
 
     for (int i = 0; i < 5; i++) begin
       logic [LOCAL_DATA_WIDTH-1:0] data; 
