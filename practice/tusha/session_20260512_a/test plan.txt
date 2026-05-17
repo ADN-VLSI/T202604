@@ -5,7 +5,7 @@ Test subject is a register interface with
     * input address ([2:0] addr_i)
     * input to write data ( [31:0] wdata_i)
     * input for the write enable (we_i) 
-    * Eight register that correspond to the add_i. Four of them input and Read-Only (reg0_i-reg3_i)
+    * Eight register that correspond to the addr_i. Four of them input and Read-Only (reg0_i-reg3_i)
     and other four (reg4_0-reg7_0) are output and can Read and Write both.
     * To read data there is a output register ([31:0] rdata_o)
     * To raise a flag during invalid conditions there is an error flag/signal (error_o)
@@ -13,7 +13,7 @@ Test subject is a register interface with
 Test Condition:
     * First four of the register can be used as input and Read-Only type.
     * Last four of the register can be used as output and can be Read and Write both. 
-    * The error flag should be raised or error_o = 1 while there is a attempt to write in the Read-Only registers.
+    * The error flag should be raised or error_o = 1 while there is an attempt to write in the Read-Only registers.
 
 
 Test Plan:
