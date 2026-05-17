@@ -56,7 +56,7 @@ always_ff @(posedge clk_i or negedge arst_ni) begin
       end
     end
     
-
-assign error_o = we_i && (addr_i <= 3'h3);  // Error if write to invalid address
+assign error_o = we_i && (addr_i <3'h4);  // Error if write to invalid address
+//assign error_o = (we_i && addr_i < 3'h4) ? 1'b1 : 1'b0;  // Error if write to invalid address
 
 endmodule

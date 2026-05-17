@@ -1,0 +1,27 @@
+
+Test subject is a register interface with
+    * input clock (clk_i)
+    * input asynchronous reset ( arst_ni)
+    * input address ([2:0] addr_i)
+    * input to write data ( [31:0] wdata_i)
+    * input for the write enable (we_i) 
+    * Eight register that correspond to the add_i. Four of them input and Read-Only (reg0_i-reg3_i)
+    and other four (reg4_i-reg7_i) are output and can Read and Write both.
+    * To read data there is a output register ([31:0] rdata_o)
+    * To raise a flag during invalid conditions there is an error flag/signal (error_o)
+
+Test Condition:
+    * First four of the register can be used as input and Read-Only type.
+    * Last four of the register can be used as output and can be Read and Write both. 
+    * The error flag should be raised or error_o = 1 while there is a attempt to write in the Read-Only registers.
+
+
+Test Plan:
+    * First test bench should ensure all the input and outputs
+    * Test bench should make sure that the reset is working properly. Read-Write register turns to zero while reset is enabled.
+    * Test bench should be able to write data to respective register as per conditions
+    * Written data have to be displayed/stored in the output register
+    * Test bench should be able to read data from respective register (Read-Only and Read-Write) as per conditions
+    * What output the output register generate if there is no data written or half legth data is provided to a specific READ-WRITE register that can be checked
+    * Error flag should be checked while we_i = 1 and write is excuted to READ-ONLY register
+
