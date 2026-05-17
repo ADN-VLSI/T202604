@@ -48,13 +48,18 @@ initial begin
     addr_i_tb = 0;
     wdata_i_tb = 0;
     we_i_tb = 0;
+    #10;
     $display("Applying reset...");
     $display("reg4_o = %h rdata_o = %h", reg4_o_tb, rdata_o_tb );
     $display("reg5_o = %h rdata_o = %h", reg5_o_tb, rdata_o_tb);
     $display("reg6_o = %h rdata_o = %h", reg6_o_tb, rdata_o_tb);
     $display("reg7_o = %h rdata_o = %h \n", reg7_o_tb, rdata_o_tb,); 
        
-    
+    // Assigning values to RO registers to check if they are read correctly
+    reg0_i_tb = 32'h11111111;
+    reg1_i_tb = 32'h22222222;
+    reg2_i_tb = 32'h33333333;
+    reg3_i_tb = 32'h44444444;
     
     #20;
     arst_ni_tb = 1; // clear reset 
@@ -70,6 +75,7 @@ initial begin
 
     // Test reading from RO registers
     $display("\nTesting read from RO registers:"); 
+    #10; 
     @(posedge clk_i_tb);
     addr_i_tb = 3'h0; we_i_tb = 0; // Read from reg0_i
     $display("write enable = %b addr_i = %h reg0_i = %h rdata_o = %h ", we_i_tb, addr_i_tb,reg0_i_tb, rdata_o_tb);
@@ -103,6 +109,7 @@ initial begin
     $display("Testing error condition (write to RO register):");
     @(posedge clk_i_tb);
     addr_i_tb = 3'h2; wdata_i_tb = 32'hDEADBEEF; we_i_tb = 1; // Attempt to write to reg2_i
+    #10; 
     $display("Error signal after invalid write: %b\n", error_o_tb);
 
     #100;
