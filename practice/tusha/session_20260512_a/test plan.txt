@@ -17,11 +17,11 @@ Test Condition:
 
 
 Test Plan:
-    * First test bench should ensure all the input and outputs
+    * First test bench should ensure all the inputs and outputs
     * Test bench should make sure that the reset is working properly. Read-Write register turns to zero while reset is enabled.
     * Test bench should be able to write data to respective register as per conditions
     * Written data have to be displayed/stored in the output register
-    * Test bench should be able to read data from respective register (Read-Only and Read-Write) as per conditions
-    * What output the output register generate if there is no data written or half legth data is provided to a specific READ-WRITE register that can be checked
-    * Error flag should be checked while we_i = 1 and write is excuted to READ-ONLY register
+    * Test bench should be able to read data from respective registers (Read-Only and Read-Write) as per conditions
+    * What output the output register generate if there is no data written or half length of the data is provided to a specific READ-WRITE register that can be checked
+    * Error flag should be checked while we_i = 1 and write is excuted to the READ-ONLY register
 
