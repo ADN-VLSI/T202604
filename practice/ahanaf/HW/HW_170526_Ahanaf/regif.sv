@@ -22,11 +22,6 @@ module regif (
 
   // YOUR CODE HERE
 
-  initial begin
-        $display("\\n\n________________________________________Output Begins From Here:_______________________________________\n\n");
-
-    end
-
 
 
   always_comb begin
