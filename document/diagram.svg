@@ -1,0 +1,239 @@
+<svg viewBox="0 0 1010 565" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', Arial, sans-serif" font-size="13">
+
+  <defs>
+    <marker id="arr"       markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#1a1a2e"/>
+    </marker>
+    <marker id="arr-clk"   markerWidth="9"  markerHeight="6" refX="8" refY="3"   orient="auto">
+      <polygon points="0 0,9 3,0 6"    fill="#2e7d32"/>
+    </marker>
+    <marker id="arr-rx"    markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#6a1b9a"/>
+    </marker>
+    <marker id="arr-par"   markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#c62828"/>
+    </marker>
+    <marker id="arr-blue"  markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#3949ab"/>
+    </marker>
+  </defs>
+
+  <!-- ════════════════════════════════════════
+       BACKGROUND
+  ════════════════════════════════════════ -->
+  <rect width="1010" height="565" fill="#f7f8fc" rx="8"/>
+
+  <!-- ════════════════════════════════════════
+       TITLE
+  ════════════════════════════════════════ -->
+  <text x="505" y="38" text-anchor="middle" font-size="21" font-weight="700"
+        fill="#1a1a2e" letter-spacing="0.5">APB – UART Block Diagram</text>
+
+  <!-- ════════════════════════════════════════
+       DOMAIN SHADINGS
+  ════════════════════════════════════════ -->
+  <!-- APB domain (left) -->
+  <rect x="18"  y="78" width="330" height="425" fill="#e3f2fd" rx="8" opacity="0.55"/>
+  <text x="183" y="97" text-anchor="middle" font-size="12" fill="#1565c0" font-weight="600">
+    APB Clock Domain — 300 MHz
+  </text>
+
+  <!-- UART domain (right) — no top label here -->
+  <rect x="360" y="78" width="625" height="425" fill="#fff8e1" rx="8" opacity="0.50"/>
+
+  <!-- CDC boundary divider -->
+  <line x1="354" y1="78" x2="354" y2="503" stroke="#78909c" stroke-dasharray="7,5" stroke-width="2"/>
+  <text x="354" y="520" text-anchor="middle" font-size="11" fill="#78909c">CDC Boundary</text>
+
+  <!-- UART Clock Domain label — positioned above TX block, aligned with RX block -->
+  <text x="668" y="108" text-anchor="middle" font-size="12" fill="#e65100" font-weight="700">
+    UART Clock Domain
+  </text>
+  <text x="668" y="122" text-anchor="middle" font-size="10.5" fill="#e65100">
+    (Lesser Clock Speed than APB)
+  </text>
+
+  <!-- ════════════════════════════════════════
+       DRAW ORDER: Lines first, then blocks on top
+  ════════════════════════════════════════ -->
+
+  <!-- ── 1. APB → APB MEMIF ── -->
+  <line x1="22" y1="260" x2="73" y2="260"
+        stroke="#1a1a2e" stroke-width="2.2" marker-end="url(#arr)"/>
+  <text x="48" y="250" text-anchor="middle" font-size="12" font-weight="700" fill="#1565c0">APB</text>
+
+  <!-- ── 2. APB MEMIF → REG-IF ── -->
+  <line x1="195" y1="260" x2="246" y2="260"
+        stroke="#1a1a2e" stroke-width="2.2" marker-end="url(#arr)"/>
+
+  <!-- ── 3. REG-IF → CDC+FIFO(TX) — exits REG-IF right edge at y=190, goes up then right ── -->
+  <polyline points="348,190 388,190 388,155 418,155"
+    fill="none" stroke="#1a1a2e" stroke-width="2.2" marker-end="url(#arr)"/>
+
+  <!-- ── 4. Baud rate config: REG-IF → CLK DIV  (x=383 vertical, SEPARATE from RX path) ── -->
+  <polyline points="348,268 383,268 383,308 418,308"
+    fill="none" stroke="#2e7d32" stroke-width="1.8" stroke-dasharray="6,4"
+    marker-end="url(#arr-clk)"/>
+  <text x="360" y="260" font-size="9.5" fill="#2e7d32" font-style="italic">baud</text>
+
+  <!-- ── 5. CDC+FIFO(RX) → REG-IF — routes BELOW REG-IF, enters from bottom centre with upward arrow ── -->
+  <polyline points="418,440 298,440 298,342"
+    fill="none" stroke="#6a1b9a" stroke-width="2.2" marker-end="url(#arr-rx)"/>
+
+  <!-- ── 6. Parity Enable: REG-IF → horizontal at y=232 → vertical bus x=603 → TX & RX ── -->
+  <line x1="348" y1="232" x2="603" y2="232"
+        stroke="#c62828" stroke-width="1.6" stroke-dasharray="5,3"/>
+  <text x="473" y="225" text-anchor="middle" font-size="9.5" fill="#c62828" font-style="italic">
+    Parity Enable
+  </text>
+  <!-- Vertical bus Parity Enable at x=603 -->
+  <line x1="603" y1="178" x2="603" y2="430"
+        stroke="#c62828" stroke-width="1.6" stroke-dasharray="5,3"/>
+  <!-- → TX -->
+  <line x1="603" y1="178" x2="618" y2="178"
+        stroke="#c62828" stroke-width="1.6" marker-end="url(#arr-par)"/>
+  <!-- → RX -->
+  <line x1="603" y1="430" x2="618" y2="430"
+        stroke="#c62828" stroke-width="1.6" marker-end="url(#arr-par)"/>
+  <!-- Junction dot -->
+  <circle cx="603" cy="232" r="3.5" fill="#c62828"/>
+
+  <!-- ── 7. Parity Type: REG-IF → horizontal at y=248 → vertical bus x=610 → TX & RX ── -->
+  <line x1="348" y1="248" x2="610" y2="248"
+        stroke="#b71c1c" stroke-width="1.5" stroke-dasharray="3,4"/>
+  <text x="473" y="262" text-anchor="middle" font-size="9.5" fill="#b71c1c" font-style="italic">
+    Parity Type
+  </text>
+  <!-- Vertical bus Parity Type at x=610 -->
+  <line x1="610" y1="186" x2="610" y2="438"
+        stroke="#b71c1c" stroke-width="1.5" stroke-dasharray="3,4"/>
+  <!-- → TX -->
+  <line x1="610" y1="186" x2="618" y2="186"
+        stroke="#b71c1c" stroke-width="1.5" marker-end="url(#arr-par)"/>
+  <!-- → RX -->
+  <line x1="610" y1="438" x2="618" y2="438"
+        stroke="#b71c1c" stroke-width="1.5" marker-end="url(#arr-par)"/>
+  <!-- Junction dot -->
+  <circle cx="610" cy="248" r="3.5" fill="#b71c1c"/>
+
+  <!-- ── 8. CDC+FIFO(TX) → TX ── -->
+  <line x1="558" y1="155" x2="616" y2="155"
+        stroke="#1a1a2e" stroke-width="2.2" marker-end="url(#arr)"/>
+
+  <!-- ── 9. CLK DIV → TX (clock, green dashed, routes via x=587) ── -->
+  <polyline points="558,292 587,292 587,200 618,200"
+    fill="none" stroke="#2e7d32" stroke-width="1.8" stroke-dasharray="5,3"
+    marker-end="url(#arr-clk)"/>
+
+  <!-- ── 10. CLK DIV → RX (clock, green dashed, routes via x=587) ── -->
+  <polyline points="558,328 587,328 587,398 618,398"
+    fill="none" stroke="#2e7d32" stroke-width="1.8" stroke-dasharray="5,3"
+    marker-end="url(#arr-clk)"/>
+
+  <!-- ── 11. TX → Baud Rates box ── -->
+  <line x1="718" y1="170" x2="788" y2="170"
+        stroke="#1a1a2e" stroke-width="2.2" marker-end="url(#arr)"/>
+
+  <!-- ── 12. RX → CDC+FIFO(RX)  (parallel data out, left) ── -->
+  <line x1="618" y1="413" x2="560" y2="413"
+        stroke="#6a1b9a" stroke-width="2.2" marker-end="url(#arr-rx)"/>
+
+  <!-- ── 13. Serial In → RX  (drawn BEFORE baud box so box overlaps middle) ── -->
+  <line x1="982" y1="413" x2="720" y2="413"
+        stroke="#3949ab" stroke-width="2" marker-end="url(#arr-blue)"/>
+  <text x="986" y="408" font-size="11" fill="#3949ab" font-style="italic">Serial</text>
+  <text x="989" y="421" font-size="11" fill="#3949ab" font-style="italic">In</text>
+
+  <!-- ════════════════════════════════════════
+       BLOCKS  (drawn on top of lines)
+  ════════════════════════════════════════ -->
+
+  <!-- APB MEMIF -->
+  <rect x="75"  y="210" width="120" height="100" rx="6"
+        fill="#bbdefb" stroke="#1565c0" stroke-width="2"/>
+  <text x="135" y="255" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a2e">APB</text>
+  <text x="135" y="275" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a2e">MEMIF</text>
+
+  <!-- REG-IF -->
+  <rect x="248" y="170" width="100" height="170" rx="6"
+        fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="298" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a2e">REG</text>
+  <text x="298" y="270" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a2e">-IF</text>
+
+
+
+  <!-- CDC + FIFO (TX) -->
+  <rect x="418" y="130" width="140" height="70" rx="6"
+        fill="#ffe0b2" stroke="#e65100" stroke-width="2"/>
+  <text x="488" y="163" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a2e">CDC + FIFO</text>
+  <text x="488" y="182" text-anchor="middle" font-size="11" fill="#e65100">(TX path)</text>
+
+  <!-- CLK DIV -->
+  <rect x="418" y="273" width="140" height="72" rx="6"
+        fill="#dcedc8" stroke="#33691e" stroke-width="2"/>
+  <text x="488" y="307" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a2e">CLK DIV</text>
+  <text x="488" y="327" text-anchor="middle" font-size="11" fill="#33691e">(Baud Gen)</text>
+
+  <!-- CDC + FIFO (RX)  — corrected from CDL FIFO -->
+  <rect x="418" y="375" width="140" height="70" rx="6"
+        fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2"/>
+  <text x="488" y="408" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a2e">CDC + FIFO</text>
+  <text x="488" y="427" text-anchor="middle" font-size="11" fill="#6a1b9a">(RX path)</text>
+
+  <!-- TX -->
+  <rect x="618" y="130" width="100" height="80" rx="6"
+        fill="#fff9c4" stroke="#f57f17" stroke-width="2.2"/>
+  <text x="668" y="178" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a2e">TX</text>
+
+  <!-- Baud Rates box (TX)  — 3.6 MHz removed -->
+  <rect x="790" y="140" width="155" height="62" rx="5"
+        fill="#fffde7" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="868" y="160" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Baud Rates</text>
+  <text x="868" y="178" text-anchor="middle" font-size="12" fill="#1a1a2e">9600 bps</text>
+  <text x="868" y="195" text-anchor="middle" font-size="12" fill="#1a1a2e">115200 bps</text>
+
+  <!-- RX -->
+  <rect x="618" y="375" width="100" height="80" rx="6"
+        fill="#e8eaf6" stroke="#3949ab" stroke-width="2.2"/>
+  <text x="668" y="423" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a2e">RX</text>
+
+  <!-- Baud Rates box (RX)  — similar to TX box, drawn AFTER serial-in line so it covers the middle -->
+  <rect x="790" y="385" width="155" height="62" rx="5"
+        fill="#e8eaf6" stroke="#3949ab" stroke-width="1.5"/>
+  <text x="868" y="405" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Baud Rates</text>
+  <text x="868" y="423" text-anchor="middle" font-size="12" fill="#1a1a2e">9600 bps</text>
+  <text x="868" y="440" text-anchor="middle" font-size="12" fill="#1a1a2e">115200 bps</text>
+
+  <!-- ════════════════════════════════════════
+       LEGEND
+  ════════════════════════════════════════ -->
+  <rect x="18" y="518" width="760" height="38" rx="5" fill="white" stroke="#ccc" stroke-width="1"/>
+  <text x="28" y="533" font-size="11" fill="#333" font-weight="600">Legend:</text>
+
+  <line x1="90"  y1="531" x2="114" y2="531" stroke="#1a1a2e" stroke-width="2"/>
+  <polygon points="114,528 122,531 114,534" fill="#1a1a2e"/>
+  <text x="126" y="534" font-size="11" fill="#333">Data Path</text>
+
+  <line x1="200" y1="531" x2="224" y2="531" stroke="#2e7d32" stroke-width="1.8" stroke-dasharray="5,3"/>
+  <polygon points="224,528 232,531 224,534" fill="#2e7d32"/>
+  <text x="236" y="534" font-size="11" fill="#333">Clock / Baud Cfg</text>
+
+  <line x1="340" y1="531" x2="364" y2="531" stroke="#6a1b9a" stroke-width="2"/>
+  <polygon points="364,528 372,531 364,534" fill="#6a1b9a"/>
+  <text x="376" y="534" font-size="11" fill="#333">RX Data Path</text>
+
+  <line x1="468" y1="531" x2="492" y2="531" stroke="#c62828" stroke-width="1.6" stroke-dasharray="5,3"/>
+  <polygon points="492,528 500,531 492,534" fill="#c62828"/>
+  <text x="504" y="534" font-size="11" fill="#333">Parity Enable</text>
+
+  <line x1="590" y1="531" x2="614" y2="531" stroke="#b71c1c" stroke-width="1.5" stroke-dasharray="3,4"/>
+  <polygon points="614,528 622,531 614,534" fill="#b71c1c"/>
+  <text x="626" y="534" font-size="11" fill="#333">Parity Type</text>
+
+  <!-- second row -->
+  <text x="28"  y="549" font-size="11" fill="#1565c0">■</text>
+  <text x="41"  y="549" font-size="11" fill="#555">APB Domain (300 MHz)</text>
+  <text x="200" y="549" font-size="11" fill="#e65100">■</text>
+  <text x="213" y="549" font-size="11" fill="#555">UART Domain (Less Clock Speed than APB)</text>
+
+</svg>
