@@ -114,6 +114,7 @@ module tb_regif;
     // Apply Reset
     reset_dut();
 
+    generate_clock();
 
     $display("\n--- Running TEST 1: Read RO Registers ---");
     read_and_check(3'h0, 32'hAAAA_0000, 1'b0);
