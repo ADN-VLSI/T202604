@@ -5,7 +5,7 @@ build:
 .PHONY: run
 run:
 	@make -s build
-	@cd build && xvlog -sv ../regif.sv
+	@cd build && xvlog -sv ../regif.sv ../tb_regif.sv
 	@cd build && xelab tb_regif -s qwer
 	@cd build && xsim qwer -runall
 .PHONY: clean

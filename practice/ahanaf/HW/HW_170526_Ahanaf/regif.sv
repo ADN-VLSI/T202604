@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-
 module regif (
     input logic arst_ni,
     input logic clk_i,
@@ -19,10 +17,6 @@ module regif (
     output logic [31:0] reg6_o,  // 0x6 RW
     output logic [31:0] reg7_o   // 0x7 RW
 );
-
-  // YOUR CODE HERE
-
-
 
   always_comb begin
     if (addr_i == 3'h0) rdata_o = reg0_i;
@@ -52,7 +46,6 @@ module regif (
     end
   end
 
-
-  assign error_o = (we_i == 1'b1 && addr_i < 3'h4) ? 1'b1 : 1'b0;
+  assign error_o = we_i == 1'b1 && addr_i < 3'h4;
 
 endmodule
