@@ -100,6 +100,7 @@ module transmitter (
     tx_o         = 1'b1;
     ready_o      = 1'b0;
     case (state)
+      IDLE:    ready_o = 1'b1; 
       START:   tx_o         = 1'b0;
       DATA:    tx_o         = data_reg[bit_cnt];
       PARITY:  tx_o         = parity_type_i ? ~parity_xor : parity_xor;
