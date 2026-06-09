@@ -1,3 +1,5 @@
+`include "package/uart_pkg.sv"
+
 module regif (
     input logic arst_ni,
     input logic clk_i,
@@ -5,47 +7,127 @@ module regif (
     input  logic [ 2:0] addr_i,
     input  logic [31:0] wdata_i,
     input  logic        we_i,
+    input  logic        re_i,
     output logic [31:0] rdata_o,
     output logic        error_o,
 
-    input  logic [31:0] reg0_i,  // 0x0 RO
-    input  logic [31:0] reg1_i,  // 0x1 RO
-    input  logic [31:0] reg2_i,  // 0x2 RO
-    input  logic [31:0] reg3_i,  // 0x3 RO
-    output logic [31:0] reg4_o,  // 0x4 RW
-    output logic [31:0] reg5_o,  // 0x5 RW
-    output logic [31:0] reg6_o,  // 0x6 RW
-    output logic [31:0] reg7_o   // 0x7 RW
+    output logic reg_uart_en,
+    output logic reg_tx_flush,
+    output logic reg_rx_flush,
+
+    output logic [11:0] reg_clk_div,
+    output logic        reg_parity_en,
+    output logic        reg_parity_type,
+    output logic        reg_second_stop_bit,
+
+    input logic [9:0] reg_tx_count,
+    input logic [9:0] reg_rx_count,
+
+    output logic [7:0] reg_tx_data,
+    output logic       reg_tx_data_valid,
+    input  logic       reg_tx_data_ready,
+
+    input  logic [7:0] reg_rx_data,
+    input  logic       reg_rx_data_valid,
+    output logic       reg_rx_data_ready
 );
 
+  import uart_pkg::UART_CTRL_OFFSET;
+  import uart_pkg::UART_CFG_OFFSET;
+  import uart_pkg::UART_STAT_OFFSET;
+  import uart_pkg::UART_TX_DATA_OFFSET;
+  import uart_pkg::UART_RX_DATA_OFFSET;
+
+  logic wr_error;
+  logic rd_error;
+
   always_comb begin
-    if (addr_i == 3'h0) rdata_o = reg0_i;
-    else if (addr_i == 3'h1) rdata_o = reg1_i;
-    else if (addr_i == 3'h2) rdata_o = reg2_i;
-    else if (addr_i == 3'h3) rdata_o = reg3_i;
-    else if (addr_i == 3'h4) rdata_o = reg4_o;
-    else if (addr_i == 3'h5) rdata_o = reg5_o;
-    else if (addr_i == 3'h6) rdata_o = reg6_o;
-    else if (addr_i == 3'h7) rdata_o = reg7_o;
-    else rdata_o = 32'b0;
+    case ({
+      we_i, re_i
+    })
+      'b00: error_o = '0;
+      'b10: error_o = wr_error;
+      'b01: error_o = rd_error;
+      default: error_o = '1;
+    endcase
   end
+
+  always_comb begin
+    case (addr_i)
+
+      UART_CTRL_OFFSET: begin
+        rdata_o  = {'0, reg_rx_flush, reg_tx_flush, reg_uart_en};
+        rd_error = 1'b0;
+      end
+
+      UART_CFG_OFFSET: begin
+        rdata_o  = {'0, reg_second_stop_bit, reg_parity_type, reg_parity_en, reg_clk_div};
+        rd_error = 1'b0;
+      end
+
+      UART_STAT_OFFSET: begin
+        rdata_o  = {'0, reg_rx_count, reg_tx_count};
+        rd_error = 1'b0;
+      end
+
+      UART_RX_DATA_OFFSET: begin
+        rdata_o  = {'0, reg_rx_data};
+        rd_error = 1'b0;
+      end
+
+      default: begin
+        rdata_o  = 32'b0;
+        rd_error = 1'b1;
+      end
+
+    endcase
+  end
+
+  always_comb begin
+    case (addr_i)
+
+      UART_CTRL_OFFSET, UART_CFG_OFFSET, UART_STAT_OFFSET, UART_TX_DATA_OFFSET: begin
+        wr_error = 1'b0;
+      end
+
+      default: begin
+        wr_error = 1'b1;
+      end
+
+    endcase
+  end
+
 
   always_ff @(posedge clk_i or negedge arst_ni) begin
     if (arst_ni == 1'b0) begin
-      reg4_o <= 32'b0;
-      reg5_o <= 32'b0;
-      reg6_o <= 32'h0;
-      reg7_o <= 32'h0;
-    end else begin
-      if (we_i == 1'b1) begin
-        if (addr_i == 3'h4) reg4_o <= wdata_i;
-        if (addr_i == 3'h5) reg5_o <= wdata_i;
-        if (addr_i == 3'h6) reg6_o <= wdata_i;
-        if (addr_i == 3'h7) reg7_o <= wdata_i;
-      end
+      reg_uart_en         <= '0;
+      reg_tx_flush        <= '0;
+      reg_rx_flush        <= '0;
+      reg_clk_div         <= '0;
+      reg_parity_en       <= '0;
+      reg_parity_type     <= '0;
+      reg_second_stop_bit <= '0;
+    end else if (~wr_error & we_i) begin
+      case (addr_i)
+
+        UART_CTRL_OFFSET: begin
+          {reg_rx_flush, reg_tx_flush, reg_uart_en} = wdata_i[2:0];
+        end
+
+        UART_CFG_OFFSET: begin
+          {reg_second_stop_bit, reg_parity_type, reg_parity_en, reg_clk_div} = wdata_i[14:0];
+        end
+
+        UART_STAT_OFFSET: begin
+          {reg_rx_count, reg_tx_count} = wdata_i[19:0];
+        end
+
+        UART_TX_DATA_OFFSET: begin
+          reg_tx_data = wdata_i[7:0];
+        end
+
+      endcase
     end
   end
-
-  assign error_o = we_i == 1'b1 && addr_i < 3'h4;
 
 endmodule

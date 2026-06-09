@@ -5,6 +5,7 @@ BUILD_DIR:=$(ROOT_DIR)/build
 LOG_DIR:=$(ROOT_DIR)/log
 
 XVLOG_CMD += -sv
+XVLOG_CMD += -i $(ROOT_DIR)/include
 XVLOG_CMD += $(shell find $(ROOT_DIR)/source -name "*.sv")
 XVLOG_CMD += $(shell find $(ROOT_DIR)/tb -name "*.sv")
 
