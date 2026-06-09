@@ -7,6 +7,20 @@ module clk_freq_div #(
     output logic                 en_o
 );
 
-  // YOUR CODE HERE
+  logic [DIV_WIDTH-1:0] cnt_q;
+
+  always_comb en_o = (div_i <= 1) | (cnt_q == div_i - 1'b1);
+
+  always_ff @(posedge clk_i or negedge arst_ni) begin
+    if (!arst_ni) begin
+      cnt_q <= '0;
+    end else begin
+      if ((div_i <= 1) || (cnt_q == div_i - 1'b1)) begin
+        cnt_q <= '0;
+      end else begin
+        cnt_q <= cnt_q + 1'b1;
+      end
+    end
+  end
 
 endmodule
