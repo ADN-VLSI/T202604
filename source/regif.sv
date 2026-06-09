@@ -53,6 +53,9 @@ module regif (
   end
 
   always_comb begin
+    rd_error          = 1'b1;
+    reg_rx_data_ready = '0;
+
     case (addr_i)
 
       UART_CTRL_OFFSET: begin
@@ -71,27 +74,36 @@ module regif (
       end
 
       UART_RX_DATA_OFFSET: begin
-        rdata_o  = {'0, reg_rx_data};
-        rd_error = 1'b0;
-      end
-
-      default: begin
-        rdata_o  = 32'b0;
-        rd_error = 1'b1;
+        reg_rx_data_ready = re_i;
+        rdata_o = {'0, reg_rx_data};
+        rd_error = ~reg_rx_data_valid & re_i;
       end
 
     endcase
   end
 
   always_comb begin
+    reg_tx_data       = wdata_i[7:0];
+    reg_tx_data_valid = '0;
+    wr_error          = 1'b1;
+
     case (addr_i)
 
-      UART_CTRL_OFFSET, UART_CFG_OFFSET, UART_STAT_OFFSET, UART_TX_DATA_OFFSET: begin
+      UART_CTRL_OFFSET: begin
         wr_error = 1'b0;
       end
 
-      default: begin
-        wr_error = 1'b1;
+      UART_CFG_OFFSET: begin
+        wr_error = 1'b0;
+      end
+
+      UART_STAT_OFFSET: begin
+        wr_error = 1'b0;
+      end
+
+      UART_TX_DATA_OFFSET: begin
+        reg_tx_data_valid = we_i;
+        wr_error = ~reg_tx_data_ready & we_i;
       end
 
     endcase
@@ -120,10 +132,6 @@ module regif (
 
         UART_STAT_OFFSET: begin
           {reg_rx_count, reg_tx_count} = wdata_i[19:0];
-        end
-
-        UART_TX_DATA_OFFSET: begin
-          reg_tx_data = wdata_i[7:0];
         end
 
       endcase
