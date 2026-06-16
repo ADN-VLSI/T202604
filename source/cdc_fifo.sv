@@ -8,13 +8,14 @@ module cdc_fifo #(
     input  logic [DATA_WIDTH-1:0] data_in_i,
     input  logic                  data_in_valid_i,
     output logic                  data_in_ready_o,
+    output logic [        SIZE:0] data_in_count_o,
 
     input  logic                  data_out_arst_ni,
     input  logic                  data_out_clk_i,
     output logic [DATA_WIDTH-1:0] data_out_o,
     output logic                  data_out_valid_o,
-    input  logic                  data_out_ready_i
-
+    input  logic                  data_out_ready_i,
+    output logic [        SIZE:0] data_out_count_o
 );
 
 
@@ -51,6 +52,9 @@ module cdc_fifo #(
 
   always_comb meq_oc = (wr_addr_[SIZE] == rd_addr[SIZE]);
   always_comb nmeq_oc = (wr_addr_[SIZE-1:0] == rd_addr[SIZE-1:0]);
+
+  always_comb data_in_count_o = wr_addr - rd_addr_;
+  always_comb data_out_count_o = wr_addr_ - rd_addr;
 
   always_comb data_in_ready_o = (meq_ic | ~nmeq_ic);
   always_comb data_out_valid_o = (~meq_oc | ~nmeq_oc);
