@@ -1,7 +1,13 @@
 module apb_uart_top_tb;
 
-  localparam int ADDR_WIDTH = 5;
+  localparam int ADDR_WIDTH = 3;
   localparam int DATA_WIDTH = 32;
+
+  import uart_pkg::UART_CTRL_OFFSET;
+  import uart_pkg::UART_CFG_OFFSET;
+  import uart_pkg::UART_STAT_OFFSET;
+  import uart_pkg::UART_TX_DATA_OFFSET;
+  import uart_pkg::UART_RX_DATA_OFFSET;
 
   ////////////////////////////////////////////////////////////
   // Signals
@@ -37,8 +43,8 @@ module apb_uart_top_tb;
   ////////////////////////////////////////////////////////////
 
   initial begin
-    clk_i = 0;
-    forever #10 clk_i = ~clk_i;
+    clk_i <= 0;
+    forever #10 clk_i <= ~clk_i;
   end
 
   ////////////////////////////////////////////////////////////
@@ -48,27 +54,25 @@ module apb_uart_top_tb;
   task automatic apb_write(input logic [ADDR_WIDTH-1:0] addr, input logic [DATA_WIDTH-1:0] data);
     begin
 
-      // Setup phase
       @(posedge clk_i);
+
+      // Setup phase
       psel_i    <= 1'b1;
       penable_i <= 1'b0;
       pwrite_i  <= 1'b1;
       paddr_i   <= addr;
       pwdata_i  <= data;
       pstrb_i   <= '1;
+      @(posedge clk_i);
 
       // Access phase
-      @(posedge clk_i);
-      penable_i <= 1'b1;
-
       // Wait for slave ready
-      while (!pready_o) @(posedge clk_i);
+      penable_i <= 1'b1;
+      do @(posedge clk_i); while (!pready_o);
+
 
       // Complete transfer
-      @(posedge clk_i);
-      psel_i    <= 0;
-      penable_i <= 0;
-      pwrite_i  <= 0;
+      psel_i <= 0;
 
       $display("[%0t] WRITE addr=%h data=%h err=%b", $time, addr, data, pslverr_o);
 
@@ -82,25 +86,22 @@ module apb_uart_top_tb;
   task automatic apb_read(input logic [ADDR_WIDTH-1:0] addr, output logic [DATA_WIDTH-1:0] data);
     begin
 
-      // Setup phase
       @(posedge clk_i);
+
+      // Setup phase
       psel_i    <= 1'b1;
       penable_i <= 1'b0;
       pwrite_i  <= 1'b0;
       paddr_i   <= addr;
+      @(posedge clk_i);
 
       // Access phase
-      @(posedge clk_i);
+      // Wait for slave ready
       penable_i <= 1'b1;
-
-      while (!pready_o) @(posedge clk_i);
+      do @(posedge clk_i); while (!pready_o);
 
       data = prdata_o;
-
-      @(posedge clk_i);
-      psel_i    <= 0;
-      penable_i <= 0;
-
+      psel_i <= 0;
       $display("[%0t] READ addr=%h data=%h err=%b", $time, addr, data, pslverr_o);
 
     end
@@ -117,14 +118,14 @@ module apb_uart_top_tb;
     //------------------------------------------------------
     // Initialize
     //------------------------------------------------------
-    arst_ni   = 0;
+    arst_ni   <= '0;
 
-    psel_i    = 0;
-    penable_i = 0;
-    pwrite_i  = 0;
-    paddr_i   = 0;
-    pwdata_i  = 0;
-    pstrb_i   = 0;
+    psel_i    <= '0;
+    penable_i <= '0;
+    pwrite_i  <= '0;
+    paddr_i   <= '0;
+    pwdata_i  <= '0;
+    pstrb_i   <= '0;
 
     uart_rx_i = 1'b1;  // idle UART line
 
@@ -133,37 +134,37 @@ module apb_uart_top_tb;
     //------------------------------------------------------
     repeat (5) @(posedge clk_i);
 
-    arst_ni = 1;
+    arst_ni <= '1;
 
     //------------------------------------------------------
     // Enable UART
     //------------------------------------------------------
-    apb_write(5'h00, 32'h00000001);
+    apb_write(UART_CTRL_OFFSET, 32'h00000001);
 
     //------------------------------------------------------
     // Configure UART
     //------------------------------------------------------
-    apb_write(5'h04, 32'h00000010);
+    apb_write(UART_CFG_OFFSET, 32'h00000010);
 
     //------------------------------------------------------
     // Read status register
     //------------------------------------------------------
-    apb_read(5'h08, rd_data);
+    apb_read(UART_STAT_OFFSET, rd_data);
 
     //------------------------------------------------------
     // Send byte 0x55
     //------------------------------------------------------
-    apb_write(5'h0C, 32'h00000055);
+    apb_write(UART_TX_DATA_OFFSET, 32'h00000055);
 
     //------------------------------------------------------
     // Send byte 0xAA
     //------------------------------------------------------
-    apb_write(5'h0C, 32'h000000AA);
+    apb_write(UART_TX_DATA_OFFSET, 32'h000000AA);
 
     //------------------------------------------------------
     // Read RX register
     //------------------------------------------------------
-    apb_read(5'h10, rd_data);
+    apb_read(UART_RX_DATA_OFFSET, rd_data);
 
     #1000;
 
