@@ -1,7 +1,7 @@
 module apb_uart_top #(
     parameter int DATA_WIDTH = 32,
-    parameter int SIZE = 8,
-    localparam int ADDR_WIDTH = 3
+    localparam int SIZE = 9,
+    localparam int ADDR_WIDTH = 5
 ) (
     input logic arst_ni,
     input logic clk_i,

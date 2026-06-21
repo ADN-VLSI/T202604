@@ -1,6 +1,6 @@
 module apb_uart_top_tb;
 
-  localparam int ADDR_WIDTH = 3;
+  localparam int ADDR_WIDTH = 5;
   localparam int DATA_WIDTH = 32;
 
   import uart_pkg::UART_CTRL_OFFSET;

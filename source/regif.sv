@@ -4,7 +4,7 @@ module regif (
     input logic arst_ni,
     input logic clk_i,
 
-    input  logic [ 2:0] addr_i,
+    input  logic [ 4:0] addr_i,
     input  logic [31:0] wdata_i,
     input  logic        we_i,
     input  logic        re_i,
@@ -97,10 +97,6 @@ module regif (
         wr_error = 1'b0;
       end
 
-      UART_STAT_OFFSET: begin
-        wr_error = 1'b0;
-      end
-
       UART_TX_DATA_OFFSET: begin
         reg_tx_data_valid = we_i;
         wr_error = ~reg_tx_data_ready & we_i;
@@ -128,10 +124,6 @@ module regif (
 
         UART_CFG_OFFSET: begin
           {reg_second_stop_bit, reg_parity_type, reg_parity_en, reg_clk_div} = wdata_i[14:0];
-        end
-
-        UART_STAT_OFFSET: begin
-          {reg_rx_count, reg_tx_count} = wdata_i[19:0];
         end
 
       endcase
