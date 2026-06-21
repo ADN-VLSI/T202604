@@ -115,6 +115,9 @@ module apb_uart_top_tb;
 
   initial begin
 
+    $dumpfile("apb_uart_top_tb.vcd");
+    $dumpvars(0, apb_uart_top_tb);
+
     //------------------------------------------------------
     // Initialize
     //------------------------------------------------------
