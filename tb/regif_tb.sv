@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-
 module regif_tb;
 
   // --- Clock and Reset Signals ---
