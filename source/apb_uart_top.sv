@@ -26,24 +26,33 @@ module apb_uart_top #(
     input logic uart_rx_i
 );
 
-  logic to_regif_we_i;
-  logic to_regif_re_i;
-
-
-  //apbmemif connections///////////////////////////////////
-  logic apbmemif_mack_i_to_apbmemif_mreq_o;
-
 
   ///////**********************////////////////////////
 
 
   //apbmemif to regif connections////////////////////////////
-  logic [ADDR_WIDTH-1:0] apbmemif_maddr_o_to_regif_addr_i; // address data array were unmatched in width.
-  logic [DATA_WIDTH-1:0] apbmemif_mwdata_o_to_regif_wdata_i;
-  logic [DATA_WIDTH-1:0] apbmemif_mrdata_i_to_regif_rdata_o;
-  logic [(DATA_WIDTH/8)-1:0] apbmemif_mstrb_o_to_apbmemif_pstrb_i;
+  logic [ADDR_WIDTH-1:0] apb_memif_maddr;
+  logic [DATA_WIDTH-1:0] apb_memif_mwdata;
+  logic [DATA_WIDTH-1:0] apb_memif_mrdata;
+  logic [DATA_WIDTH/8-1:0] apb_memif_mstrb;
 
-  logic apbmemif_to_regif_we_i_and_re_i;
+  logic mem_error;
+  logic strb_error;
+
+  logic error_rsp;
+
+
+  logic mreq_o;
+  logic mwe_o;
+
+  logic regif_we;
+  logic regif_re;
+
+  always_comb error_rsp = mem_error | strb_error;
+  always_comb strb_error = (apb_memif_mstrb != '1) & regif_we;
+
+  always_comb regif_we = mreq_o & mwe_o;
+  always_comb regif_re = mreq_o & ~mwe_o;
 
   //////////////////********************//////////////////
 
@@ -74,7 +83,7 @@ module apb_uart_top #(
   //////CDC FIFO TX to Transmitter connections//////////////////////////////////////
   logic [7:0] tx_cdc_fifo_data_out_o_to_transmitter_data_i;
   logic tx_cdc_fifo_data_out_valid_o_to_transmitter_valid_i;
-  logic tx_cdc_fifo_data_out_ready_i_to_transmitter_ready_i;
+  logic tx_cdc_fifo_data_out_ready_i_to_transmitter_ready_o;
 
 
   ///////////********************////////////////////////////////
@@ -97,11 +106,9 @@ module apb_uart_top #(
   //////TX////////////
   logic tx_clk_div_en_o_to_transmitter_clk_i;
 
-  /////////********************/////////////////////////
-
-  assign apbmemif_to_regif_we_i_and_re_i = mreq_o & mwe_o; // mreq_o and mwe_o are not declared here
-
-
+  logic uart_en;
+  logic tx_flush;
+  logic rx_flush;
 
 
   ////Instantiations//////////////////////////////////////////
@@ -126,15 +133,14 @@ module apb_uart_top #(
       .prdata_o(prdata_o),
       .pslverr_o(pslverr_o),
 
-      // Memory Interface
-      .mreq_o(apbmemif_mreq_o_to_apbmemif_mack_i),  // regif port required?? 
-      .maddr_o(maddr_o_to_regif_addr_i),
-      .mwe_o(apbmemif_to_regif_we_i_and_re_i),
-      .mwdata_o(apbmemif_mwdata_o_to_regif_wdata_i),
-      .mstrb_o(apbmemif_mstrb_o_to_apbmemif_pstrb_i),  // regif port required??  
-      .mack_i(apbmemif_mack_i_to_apbmemif_mreq_o),  // regif port required??  
-      .mrdata_i(apbmemif_mrdata_i_to_regif_rdata_o),
-      .mresp_i()  //  // regif port required?? 
+      .mreq_o  (mreq_o),
+      .maddr_o (apb_memif_maddr),
+      .mwe_o   (mwe_o),
+      .mwdata_o(apb_memif_mwdata),
+      .mstrb_o (apb_memif_mstrb),
+      .mack_i  (mreq_o),
+      .mrdata_i(apb_memif_mrdata),
+      .mresp_i (error_rsp)
   );
 
   /////////////////********************///////////////////////////////
@@ -145,17 +151,17 @@ module apb_uart_top #(
       .arst_ni(arst_ni),
       .clk_i  (clk_i),
 
-      .addr_i(maddr_o_to_regif_addr_i),
-      .wdata_i(apbmemif_mwdata_o_to_regif_wdata_i),
-      .we_i(apbmemif_to_regif_we_i_and_re_i),
-      .re_i(~apbmemif_to_regif_we_i_and_re_i),
-      .rdata_o(apbmemif_mrdata_i_to_regif_rdata_o),
-      .error_o(),  // Ignoring error output for simplicity
+      .addr_i(apb_memif_maddr),
+      .wdata_i(apb_memif_mwdata),
+      .we_i(regif_we),
+      .re_i(regif_re),
+      .rdata_o(apb_memif_mrdata),
+      .error_o(mem_error),
 
       // Control signals to UART core
-      .reg_uart_en (),
-      .reg_tx_flush(),  // port missing in CDC FIFO?
-      .reg_rx_flush(),  // port missing in CDC FIFO? 
+      .reg_uart_en (uart_en),
+      .reg_tx_flush(tx_flush),  // port missing in CDC FIFO?
+      .reg_rx_flush(rx_flush),  // port missing in CDC FIFO? 
 
       .reg_clk_div(regif_reg_clk_div_to_rx_clk_div_i),
       .reg_parity_en(parity_enable),
@@ -185,7 +191,7 @@ module apb_uart_top #(
       .SIZE(SIZE)  // Example size, can be adjusted as needed
   ) u_cdc_fifo_tx (
       // Data input side (APB clock domain)
-      .data_in_arst_ni(arst_ni),
+      .data_in_arst_ni(arst_ni & ~tx_flush),
       .data_in_clk_i(clk_i),
       .data_in_i(regif_reg_tx_data_to_tx_cdc_fifo_datain_i),
       .data_in_valid_i(regif_reg_tx_data_valid_to_tx_cdc_fifo_datain_valid_i),
@@ -193,11 +199,11 @@ module apb_uart_top #(
       .data_in_count_o(regif_reg_tx_data_count_to_tx_cdc_fifo_datain_count_i),
 
       // Data output side (UART clock domain, assuming same as APB for simplicity)
-      .data_out_arst_ni(),
-      .data_out_clk_i(tx_clk_div_en_o_to_transmitter_clk_i),
+      .data_out_arst_ni(arst_ni & ~tx_flush),
+      .data_out_clk_i(tx_clk_div_en_o_to_transmitter_clk_i & clk_i),
       .data_out_o(tx_cdc_fifo_data_out_o_to_transmitter_data_i), // Connect to UART transmitter data input
       .data_out_valid_o(tx_cdc_fifo_data_out_valid_o_to_transmitter_valid_i), // Connect to UART transmitter valid signal
-      .data_out_ready_i(tx_cdc_fifo_data_out_ready_i_to_transmitter_ready_i), // Connect to UART transmitter ready signal
+      .data_out_ready_i(tx_cdc_fifo_data_out_ready_i_to_transmitter_ready_o & uart_en), // Connect to UART transmitter ready signal
       .data_out_count_o()
   );
 
@@ -210,15 +216,15 @@ module apb_uart_top #(
       .SIZE(SIZE)  // Example size, can be adjusted as needed
   ) u_cdc_fifo_rx (
       // Data input side (UART clock domain)
-      .data_in_arst_ni(),
-      .data_in_clk_i(rx_clk_div_en_o_to_receiver_clk_i),
+      .data_in_arst_ni(arst_ni & ~rx_flush),
+      .data_in_clk_i(rx_clk_div_en_o_to_receiver_clk_i & clk_i),
       .data_in_i(rx_cdc_fifo_data_in_i_to_receiver_data_o),
       .data_in_valid_i(rx_cdc_fifo_data_in_valid_i_to_receiver_valid_o),
       .data_in_ready_o(),
       .data_in_count_o(),
 
       // Data output side (APB clock domain, assuming same as APB for simplicity)
-      .data_out_arst_ni(arst_ni),
+      .data_out_arst_ni(arst_ni & ~rx_flush),
       .data_out_clk_i(clk_i),
       .data_out_o(rx_cdc_fifo_data_out_o_to_regif_reg_rx_data), // Connect to UART receiver data output
       .data_out_valid_o(rx_cdc_fifo_data_out_valid_o_to_regif_reg_rx_data_valid), // Connect to UART transmitter valid signal
@@ -234,7 +240,7 @@ module apb_uart_top #(
       // Active low asynchronous reset
       .arst_ni(arst_ni),
       // Clock input
-      .clk_i  (tx_clk_div_en_o_to_transmitter_clk_i),
+      .clk_i  (tx_clk_div_en_o_to_transmitter_clk_i & clk_i),
 
       // Parity enable: 1 to include parity bit, 0 to exclude
       .parity_en_i  (parity_enable),
@@ -246,9 +252,9 @@ module apb_uart_top #(
       // 8-bit data to transmit
       .data_i (tx_cdc_fifo_data_out_o_to_transmitter_data_i),
       // Valid signal indicating data_i is ready for transmission
-      .valid_i(tx_cdc_fifo_data_out_valid_o_to_transmitter_valid_i),
+      .valid_i(tx_cdc_fifo_data_out_valid_o_to_transmitter_valid_i & uart_en),
       // Ready signal indicating transmitter is ready to accept new data
-      .ready_o(),
+      .ready_o(tx_cdc_fifo_data_out_ready_i_to_transmitter_ready_o),
 
       // Transmitted serial data output
       .tx_o(uart_tx_o)
@@ -263,7 +269,7 @@ module apb_uart_top #(
       // Active low asynchronous reset
       .arst_ni(arst_ni),
       // Clock input
-      .clk_i  (rx_clk_div_en_o_to_receiver_clk_i),
+      .clk_i  (rx_clk_div_en_o_to_receiver_clk_i & clk_i & uart_en),
 
       // Parity enable: 1 to include parity bit, 0 to exclude
       .parity_en_i  (parity_enable),
@@ -278,7 +284,7 @@ module apb_uart_top #(
       .valid_o(rx_cdc_fifo_data_in_valid_i_to_receiver_valid_o),
 
       // Received serial data input
-      .rx_i(uart_rx_i)
+      .rx_i(uart_rx_i | ~uart_en)
   );
 
   ///////////////////*****************////////////////////
@@ -288,11 +294,11 @@ module apb_uart_top #(
   ////RX ///////
 
   clk_freq_div #(
-      .DIV_WIDTH(32)
+      .DIV_WIDTH(9)
   ) u_rx_clk_div (
       .arst_ni(arst_ni),
       .clk_i(clk_i),
-      .div_i(regif_reg_clk_div_to_rx_clk_div_i),
+      .div_i(regif_reg_clk_div_to_rx_clk_div_i[11:3]),
       .en_o(rx_clk_div_en_o_to_receiver_clk_i)
   );
 
@@ -304,7 +310,7 @@ module apb_uart_top #(
       .DIV_WIDTH(4)
   ) u_tx_clk_div_8 (
       .arst_ni(arst_ni),
-      .clk_i(rx_clk_div_en_o_to_receiver_clk_i),
+      .clk_i(rx_clk_div_en_o_to_receiver_clk_i & clk_i),
       .div_i(4'd8),
       .en_o(tx_clk_div_en_o_to_transmitter_clk_i)
   );
