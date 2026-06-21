@@ -11,7 +11,7 @@ module clk_freq_div #(
 
   always_comb en_o = (div_i == '0) | (div_i == 1) | (count_q == '0);
 
-  always_ff @(posedge clk_i or negedge arst_ni) begin
+  always_ff @(negedge clk_i or negedge arst_ni) begin
 
     if (!arst_ni) begin
       count_q <= '0;
