@@ -2,42 +2,35 @@ module apb_uart_top_tb;
 
   localparam int ADDR_WIDTH = 5;
   localparam int DATA_WIDTH = 32;
-  localparam int SIZE       = 8;
 
   ////////////////////////////////////////////////////////////
   // Signals
   ////////////////////////////////////////////////////////////
 
-  logic arst_ni;
-  logic clk_i;
+  logic                    arst_ni;
+  logic                    clk_i;
 
   // APB interface
   logic                    psel_i;
   logic                    penable_i;
-  logic [ADDR_WIDTH-1:0]   paddr_i;
+  logic [  ADDR_WIDTH-1:0] paddr_i;
   logic                    pwrite_i;
-  logic [DATA_WIDTH-1:0]   pwdata_i;
+  logic [  DATA_WIDTH-1:0] pwdata_i;
   logic [DATA_WIDTH/8-1:0] pstrb_i;
 
   logic                    pready_o;
-  logic [DATA_WIDTH-1:0]   prdata_o;
+  logic [  DATA_WIDTH-1:0] prdata_o;
   logic                    pslverr_o;
 
   // UART
-  logic uart_tx_o;
-  logic uart_rx_i;
+  logic                    uart_tx_o;
+  logic                    uart_rx_i;
 
   ////////////////////////////////////////////////////////////
   // DUT
   ////////////////////////////////////////////////////////////
 
-  apb_uart_top #(
-      .ADDR_WIDTH(ADDR_WIDTH),
-      .DATA_WIDTH(DATA_WIDTH),
-      .SIZE(SIZE)
-  ) dut (
-      .*
-  );
+  apb_uart_top #(.DATA_WIDTH(DATA_WIDTH)) dut (.*);
 
   ////////////////////////////////////////////////////////////
   // Clock generation
@@ -52,75 +45,65 @@ module apb_uart_top_tb;
   // APB Write Task
   ////////////////////////////////////////////////////////////
 
-  task automatic apb_write(
-      input logic [ADDR_WIDTH-1:0] addr,
-      input logic [DATA_WIDTH-1:0] data
-  );
-  begin
+  task automatic apb_write(input logic [ADDR_WIDTH-1:0] addr, input logic [DATA_WIDTH-1:0] data);
+    begin
 
-    // Setup phase
-    @(posedge clk_i);
-    psel_i    <= 1'b1;
-    penable_i <= 1'b0;
-    pwrite_i  <= 1'b1;
-    paddr_i   <= addr;
-    pwdata_i  <= data;
-    pstrb_i   <= '1;
-
-    // Access phase
-    @(posedge clk_i);
-    penable_i <= 1'b1;
-
-    // Wait for slave ready
-    while (!pready_o)
+      // Setup phase
       @(posedge clk_i);
+      psel_i    <= 1'b1;
+      penable_i <= 1'b0;
+      pwrite_i  <= 1'b1;
+      paddr_i   <= addr;
+      pwdata_i  <= data;
+      pstrb_i   <= '1;
 
-    // Complete transfer
-    @(posedge clk_i);
-    psel_i    <= 0;
-    penable_i <= 0;
-    pwrite_i  <= 0;
+      // Access phase
+      @(posedge clk_i);
+      penable_i <= 1'b1;
 
-    $display("[%0t] WRITE addr=%h data=%h err=%b",
-             $time, addr, data, pslverr_o);
+      // Wait for slave ready
+      while (!pready_o) @(posedge clk_i);
 
-  end
+      // Complete transfer
+      @(posedge clk_i);
+      psel_i    <= 0;
+      penable_i <= 0;
+      pwrite_i  <= 0;
+
+      $display("[%0t] WRITE addr=%h data=%h err=%b", $time, addr, data, pslverr_o);
+
+    end
   endtask
 
   ////////////////////////////////////////////////////////////
   // APB Read Task
   ////////////////////////////////////////////////////////////
 
-  task automatic apb_read(
-      input  logic [ADDR_WIDTH-1:0] addr,
-      output logic [DATA_WIDTH-1:0] data
-  );
-  begin
+  task automatic apb_read(input logic [ADDR_WIDTH-1:0] addr, output logic [DATA_WIDTH-1:0] data);
+    begin
 
-    // Setup phase
-    @(posedge clk_i);
-    psel_i    <= 1'b1;
-    penable_i <= 1'b0;
-    pwrite_i  <= 1'b0;
-    paddr_i   <= addr;
-
-    // Access phase
-    @(posedge clk_i);
-    penable_i <= 1'b1;
-
-    while (!pready_o)
+      // Setup phase
       @(posedge clk_i);
+      psel_i    <= 1'b1;
+      penable_i <= 1'b0;
+      pwrite_i  <= 1'b0;
+      paddr_i   <= addr;
 
-    data = prdata_o;
+      // Access phase
+      @(posedge clk_i);
+      penable_i <= 1'b1;
 
-    @(posedge clk_i);
-    psel_i    <= 0;
-    penable_i <= 0;
+      while (!pready_o) @(posedge clk_i);
 
-    $display("[%0t] READ addr=%h data=%h err=%b",
-             $time, addr, data, pslverr_o);
+      data = prdata_o;
 
-  end
+      @(posedge clk_i);
+      psel_i    <= 0;
+      penable_i <= 0;
+
+      $display("[%0t] READ addr=%h data=%h err=%b", $time, addr, data, pslverr_o);
+
+    end
   endtask
 
   ////////////////////////////////////////////////////////////
@@ -143,12 +126,12 @@ module apb_uart_top_tb;
     pwdata_i  = 0;
     pstrb_i   = 0;
 
-    uart_rx_i = 1'b1;      // idle UART line
+    uart_rx_i = 1'b1;  // idle UART line
 
     //------------------------------------------------------
     // Release reset
     //------------------------------------------------------
-    repeat(5) @(posedge clk_i);
+    repeat (5) @(posedge clk_i);
 
     arst_ni = 1;
 
