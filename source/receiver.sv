@@ -33,6 +33,7 @@ PARITY_BIT, STOP_BIT_FIRST, STOP_BIT_SECOND } state_e_t;
     logic rx_q;
     state_e_t present_bit;  // Current state of the FSM for UART reception
     state_e_t next_bit;  // Next state signal for FSM transitions 
+    //logic [7:0] data_pre_o;  // Internal signal for received data before output assignment 
 
 
     parameter clktick_per_bit = 8;  // Number of clock cycles per bit (for baud rate timing)
@@ -40,7 +41,7 @@ PARITY_BIT, STOP_BIT_FIRST, STOP_BIT_SECOND } state_e_t;
     logic [2:0] bit_clk_counter;  // Counter for clock cycles within a bit period (3 bits to count up to 7 for clktick_per_bit=8)
 
 
-    assign data_o = valid_o ? rx_data_shift : 8'b0;  // Output the received data
+    //assign data_pre_o = rx_data_shift;  // Output the received data
     assign paritydata = ^rx_data_shift;  // Calculate parity from received data bits
 
 
@@ -52,10 +53,13 @@ PARITY_BIT, STOP_BIT_FIRST, STOP_BIT_SECOND } state_e_t;
     if (!arst_ni) begin
       rx_q <= 1'b1; // Reset to idle state (line is high when idle)
     end else begin
+       //if (bit_clk_counter == clktick_per_bit -1) begin  //changed
       rx_q <= rx_i;
-    end
+    //end
   end
+end
 
+  //assign starting_bit_detected = (rx_i == 1'b0) && (rx_q == 1'b1) && (present_bit == IDLE);
 
     always_ff @(posedge clk_i or negedge arst_ni) begin
         if (!arst_ni) begin
@@ -65,7 +69,7 @@ PARITY_BIT, STOP_BIT_FIRST, STOP_BIT_SECOND } state_e_t;
             // Detect falling edge for start bit (rx_i goes from high to low)
            starting_bit_detected <= (rx_i == 1'b0) && (rx_q == 1'b1) && (present_bit == IDLE); // NEED FSM?
             end
-        end
+        end 
 
 
     always_ff @(posedge clk_i or negedge arst_ni) begin
@@ -109,7 +113,8 @@ PARITY_BIT, STOP_BIT_FIRST, STOP_BIT_SECOND } state_e_t;
         IDLE : begin
             
             next_bit = (starting_bit_detected) ? START_BIT : IDLE;  // Transition to start_bit on start edge 
-   
+            
+
     end
 
         START_BIT : begin
@@ -204,7 +209,7 @@ PARITY_BIT, STOP_BIT_FIRST, STOP_BIT_SECOND } state_e_t;
             rx_data_shift <= 8'b0;  // Reset shift register on reset
                     // Clear valid signal on reset
         end else begin
-           if (bit_clk_counter == half_clk_per_bit - 1) begin // start bit detection FSM??
+           if (bit_clk_counter == clktick_per_bit - 1) begin // start bit detection FSM?? change here
                // Shift in the received bit into the appropriate position 
             case (present_bit) 
                 DATABIT_0: rx_data_shift [0] <= rx_i;    
@@ -217,7 +222,9 @@ PARITY_BIT, STOP_BIT_FIRST, STOP_BIT_SECOND } state_e_t;
                 DATABIT_7: rx_data_shift [7] <= rx_i;
                 default  : ;  // No action for other states
             endcase
-            end              
+        
+            end        
+        
         end
     end 
 
@@ -236,10 +243,29 @@ PARITY_BIT, STOP_BIT_FIRST, STOP_BIT_SECOND } state_e_t;
         end
     end
 
-   
-    assign valid_o = ((present_bit == STOP_BIT_FIRST) || (present_bit == STOP_BIT_SECOND)) && 
-                        (rx_i==1) && (parity_en_i ? parity_checked: 1'b1) &&
-                        (bit_clk_counter == half_clk_per_bit - 1);  // Data is valid at stop bit(s)
+    always_ff @(posedge clk_i or negedge arst_ni) begin
+    if (!arst_ni) begin
+        data_o  <= 8'b0;
+        valid_o <= 1'b0;
+    end
+    else begin
+        valid_o <= 1'b0;
 
+        if ((present_bit == STOP_BIT_FIRST) &&
+            (bit_clk_counter == half_clk_per_bit-1) &&
+            rx_i) begin
+
+            data_o  <= rx_data_shift;   // copy whole byte
+            valid_o <= 1'b1;            // pulse valid for one clock
+        end
+    end
+end
+
+   
+    /*assign valid_o = ((present_bit == STOP_BIT_FIRST) || (present_bit == STOP_BIT_SECOND)) &&   
+                        (rx_i==1) && (parity_en_i ? parity_checked: 1'b1) &&
+                        (bit_clk_counter == half_clk_per_bit - 1);  // Data is valid at stop bit(s)*/ 
+
+   
 
 endmodule
