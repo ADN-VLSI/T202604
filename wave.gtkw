@@ -1,0 +1,23 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Tue Jun 23 05:21:45 2026
+[*]
+[dumpfile] "C:\Users\foeza\Documents\T202604\build\uvm_tb.vcd"
+[dumpfile_mtime] "Tue Jun 23 05:20:40 2026"
+[dumpfile_size] 338575
+[savefile] "C:\Users\foeza\Documents\T202604\wave.gtkw"
+[timestart] 0
+[size] 1536 793
+[pos] -191 -186
+*-16.993509 335000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] uvm_tb.
+[treeopen] uvm_tb.ctrt_intf.
+[sst_width] 197
+[signals_width] 86
+[sst_expanded] 1
+[sst_vpaned_height] 221
+@28
+uvm_tb.ctrt_intf.arst_ni
+uvm_tb.ctrt_intf.clk_i
+[pattern_trace] 1
+[pattern_trace] 0

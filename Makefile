@@ -4,11 +4,6 @@ ROOT_DIR:=$(CURDIR)
 BUILD_DIR:=$(ROOT_DIR)/build
 LOG_DIR:=$(ROOT_DIR)/log
 
-XVLOG_CMD += -sv
-XVLOG_CMD += -i $(ROOT_DIR)/include
-XVLOG_CMD += $(shell find $(ROOT_DIR)/source -name "*.sv")
-XVLOG_CMD += $(shell find $(ROOT_DIR)/tb -name "*.sv")
-
 EW_HL = | grep -iE "error:|warning:|" --color=auto
 
 GUI := 0
@@ -33,6 +28,18 @@ ifeq ($(TOP),)
 endif
 	@make -s clean
 	@make -s $(BUILD_DIR) $(LOG_DIR)
-	@cd $(BUILD_DIR) && xvlog $(XVLOG_CMD) -log $(LOG_DIR)/xvlog_$(shell date +%Y%m%d_%H%M%S).log $(EW_HL)
+	@echo "-sv" > $(BUILD_DIR)/xvlog_cmd
+	@echo "-d DEFAULT_ADDR_WIDTH=5" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "-d DEFAULT_DATA_WIDTH=32" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "-i $(ROOT_DIR)/include" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "$(shell find $(ROOT_DIR)/submodule/apb-uart/intf -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "$(shell find $(ROOT_DIR)/source -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "$(shell find $(ROOT_DIR)/tb -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "-L uvm" >> $(BUILD_DIR)/xvlog_cmd
+	@cd $(BUILD_DIR) && xvlog -f $(BUILD_DIR)/xvlog_cmd -log $(LOG_DIR)/xvlog_$(shell date +%Y%m%d_%H%M%S).log $(EW_HL)
 	@cd $(BUILD_DIR) && xelab -debug all $(TOP) -s snap_$(TOP) -log $(LOG_DIR)/xelab_$(TOP)_$(shell date +%Y%m%d_%H%M%S).log $(EW_HL)
 	@cd $(BUILD_DIR) && xsim snap_$(TOP) $(XSIM_CMD) -log $(LOG_DIR)/xsim_$(TOP)_$(shell date +%Y%m%d_%H%M%S).log $(EW_HL)
+
+.PHONY: uvm
+uvm:
+	@make -s all TOP=uvm_tb
