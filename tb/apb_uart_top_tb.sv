@@ -169,7 +169,7 @@ module apb_uart_top_tb;
     //------------------------------------------------------
     apb_read(UART_RX_DATA_OFFSET, rd_data);
 
-    #1000;
+    #5000;
 
     $finish;
 

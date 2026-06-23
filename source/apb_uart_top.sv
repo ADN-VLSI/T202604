@@ -307,11 +307,11 @@ module apb_uart_top #(
   /////TX ///////
 
   clk_freq_div #(
-      .DIV_WIDTH(4)
-  ) u_tx_clk_div_8 (
+      .DIV_WIDTH(12)
+  ) u_tx_clk_div (
       .arst_ni(arst_ni),
-      .clk_i(rx_clk_div_en_o_to_receiver_clk_i & clk_i),
-      .div_i(4'd8),
+      .clk_i(clk_i),
+      .div_i(regif_reg_clk_div_to_rx_clk_div_i),
       .en_o(tx_clk_div_en_o_to_transmitter_clk_i)
   );
 
