@@ -21,7 +21,7 @@ module dual_edge_reg #(
   end
 
   always_ff @(negedge clk_i or negedge arst_ni) begin
-    if (arst_ni) begin
+    if (~arst_ni) begin
       q_o <= '0;
     end else begin
       q_o <= q_r;

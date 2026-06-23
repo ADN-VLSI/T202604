@@ -22,27 +22,29 @@ module cdc_fifo #(
   /* verilog_format: off */
   logic          common_arst_ni;
 
-  //             SIGNAL    // CLOCK   // FORMAT // DESCRIPTION
-  //-----------------------//---------//--------//-------------------------------------------
-  logic [SIZE:0] wr_addr;  // in_clk  // binary // Write pointer 
-  logic [SIZE:0] wr_addr_; // out_clk // binary // Write pointer 
-  logic [SIZE:0] wpgi;     // in_clk  // gray   // Write pointer reg in
-  logic [SIZE:0] wpgo;     // out_clk // gray   // Write pointer reg out
-  logic [SIZE:0] wp_pass;  // in_clk  // gray   // Write pointer that will cross clock domain
-  logic          wr_en;    // in_clk  //        // Write enable
-  logic          meq_ic;   // in_clk  //        // MSB of write pointer equals MSB of read pointer
-  logic          nmeq_ic;  // in_clk  //        // NON-MSB of write pointer equals NON-MSB of read pointer
+  //             SIGNAL        // CLOCK   // FORMAT // DESCRIPTION
+  //---------------------------//---------//--------//-------------------------------------------
+  logic [SIZE:0] wr_addr;      // in_clk  // binary // Write pointer 
+  logic [SIZE:0] wr_addr_next; // in_clk  // binary // Write pointer next
+  logic [SIZE:0] wr_addr_;     // out_clk // binary // Write pointer 
+  logic [SIZE:0] wpgi;         // in_clk  // gray   // Write pointer reg in
+  logic [SIZE:0] wpgo;         // out_clk // gray   // Write pointer reg out
+  logic [SIZE:0] wp_pass;      // in_clk  // gray   // Write pointer that will cross clock domain
+  logic          wr_en;        // in_clk  //        // Write enable
+  logic          meq_ic;       // in_clk  //        // MSB of write pointer equals MSB of read pointer
+  logic          nmeq_ic;      // in_clk  //        // NON-MSB of write pointer equals NON-MSB of read pointer
 
-  //             SIGNAL    // CLOCK   // FORMAT // DESCRIPTION
-  //-----------------------//---------//--------//-------------------------------------------
-  logic [SIZE:0] rd_addr;  // out_clk // binary // Read pointer 
-  logic [SIZE:0] rd_addr_; // in_clk  // binary // Read pointer 
-  logic [SIZE:0] rpgi;     // out_clk // gray   // Read pointer reg in
-  logic [SIZE:0] rpgo;     // in_clk  // gray   // Read pointer reg out
-  logic [SIZE:0] rp_pass;  // out_clk // gray   // Read pointer that will cross clock domain
-  logic [SIZE:0] rd_en;    // out_clk //        // Read enable
-  logic          meq_oc;   // out_clk //        // MSB of write pointer equals MSB of read pointer
-  logic          nmeq_oc;  // out_clk //        // NON-MSB of write pointer equals NON-MSB of read pointer
+  //             SIGNAL        // CLOCK   // FORMAT // DESCRIPTION
+  //---------------------------//---------//--------//-------------------------------------------
+  logic [SIZE:0] rd_addr;      // out_clk // binary // Read pointer 
+  logic [SIZE:0] rd_addr_next; // out_clk // binary // Read pointer next
+  logic [SIZE:0] rd_addr_;     // in_clk  // binary // Read pointer 
+  logic [SIZE:0] rpgi;         // out_clk // gray   // Read pointer reg in
+  logic [SIZE:0] rpgo;         // in_clk  // gray   // Read pointer reg out
+  logic [SIZE:0] rp_pass;      // out_clk // gray   // Read pointer that will cross clock domain
+  logic [SIZE:0] rd_en;        // out_clk //        // Read enable
+  logic          meq_oc;       // out_clk //        // MSB of write pointer equals MSB of read pointer
+  logic          nmeq_oc;      // out_clk //        // NON-MSB of write pointer equals NON-MSB of read pointer
   /* verilog_format: on */
 
   always_comb common_arst_ni = data_in_arst_ni & data_out_arst_ni;
@@ -57,10 +59,13 @@ module cdc_fifo #(
   always_comb data_out_count_o = wr_addr_ - rd_addr;
 
   always_comb data_in_ready_o = (meq_ic | ~nmeq_ic);
-  always_comb data_out_valid_o = (~meq_oc | ~nmeq_oc);
+  always_comb data_out_valid_o = (~meq_oc | ~nmeq_oc); // ~empty = (~meq_oc | ~nmeq_oc)
 
   always_comb wr_en = data_in_valid_i & data_in_ready_o;
   always_comb rd_en = data_out_valid_o & data_out_ready_i;
+
+  always_comb wr_addr_next = wr_addr + 1;
+  always_comb rd_addr_next = rd_addr + 1;
 
   always_ff @(posedge data_in_clk_i or negedge common_arst_ni) begin
     if (~common_arst_ni) begin
@@ -93,15 +98,15 @@ module cdc_fifo #(
   bin_to_gray #(
       .N(SIZE + 1)
   ) b2g_w (
-      .bin_i (wr_addr + 1),
-      .gray_o()
+      .bin_i (wr_addr_next),
+      .gray_o(wpgi)
   );
 
   bin_to_gray #(
       .N(SIZE + 1)
   ) b2g_r (
-      .bin_i (rd_addr + 1),
-      .gray_o()
+      .bin_i (rd_addr_next),
+      .gray_o(rpgi)
   );
 
   gray_to_bin #(
@@ -137,8 +142,8 @@ module cdc_fifo #(
   ) rd_ptr_ic (
       .arst_ni(common_arst_ni),
       .clk_i  (data_in_clk_i),
-      .d_i    (rd_pass),
-      .q_o    (rd_addr_)
+      .d_i    (rp_pass),
+      .q_o    (rpgo)
   );
 
   dual_edge_reg #(
@@ -147,7 +152,7 @@ module cdc_fifo #(
       .arst_ni(common_arst_ni),
       .clk_i  (data_out_clk_i),
       .d_i    (wp_pass),
-      .q_o    (wr_addr_)
+      .q_o    (wpgo)
   );
 
 endmodule
