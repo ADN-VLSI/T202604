@@ -1,0 +1,50 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Sun Jul 05 05:11:17 2026
+[*]
+[dumpfile] "C:\Users\foeza\Documents\T202604\build\layered_tb.vcd"
+[dumpfile_mtime] "Sun Jul 05 05:09:04 2026"
+[dumpfile_size] 93090
+[savefile] "C:\Users\foeza\Documents\T202604\lt.gtkw"
+[timestart] 0
+[size] 1536 793
+[pos] -35 -35
+*-20.758144 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] layered_tb.
+[sst_width] 197
+[signals_width] 126
+[sst_expanded] 1
+[sst_vpaned_height] 221
+@28
+layered_tb.ctrl_intf.arst_ni
+layered_tb.ctrl_intf.clk_i
+@200
+-
+-
+@28
+layered_tb.apb_intf.psel
+layered_tb.apb_intf.penable
+@22
+layered_tb.apb_intf.paddr[4:0]
+@28
+layered_tb.apb_intf.pwrite
+@22
+layered_tb.apb_intf.pwdata[31:0]
+layered_tb.apb_intf.pstrb[3:0]
+@200
+-
+@28
+layered_tb.apb_intf.pready
+@22
+layered_tb.apb_intf.prdata[31:0]
+@28
+layered_tb.apb_intf.pslverr
+@200
+-
+-
+@28
+layered_tb.uart_intf.rx
+@29
+layered_tb.uart_intf.tx
+[pattern_trace] 1
+[pattern_trace] 0

@@ -1,9 +1,12 @@
 `ifndef UART_PKG_SV
 `define UART_PKG_SV 0
+
 package uart_pkg;
 
-  // UART Register Map
+  localparam int ADDR_WIDTH = 5;
+  localparam int DATA_WIDTH = 32;
 
+  // UART Register Map
   localparam int UART_CTRL_OFFSET    = 'h00;
   localparam int UART_CFG_OFFSET     = 'h04;
   localparam int UART_STAT_OFFSET    = 'h08;

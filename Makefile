@@ -38,9 +38,10 @@ endif
 	@echo "-d DEFAULT_ADDR_WIDTH=5" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "-d DEFAULT_DATA_WIDTH=32" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "-i $(ROOT_DIR)/include" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "-i $(ROOT_DIR)/tb" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "$(shell find $(ROOT_DIR)/submodule/apb-uart/intf -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "$(shell find $(ROOT_DIR)/source -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
-	@echo "$(shell find $(ROOT_DIR)/tb -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "$(shell find $(ROOT_DIR)/tb -maxdepth 1 -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "-L uvm" >> $(BUILD_DIR)/xvlog_cmd
 	@cd $(BUILD_DIR) && xvlog -f $(BUILD_DIR)/xvlog_cmd -log $(LOG_DIR)/xvlog_$(shell date +%Y%m%d_%H%M%S).log $(EW_HL)
 	@cd $(BUILD_DIR) && xelab -debug all $(TOP) -s snap_$(TOP) -log $(LOG_DIR)/xelab_$(TOP)_$(shell date +%Y%m%d_%H%M%S).log $(EW_HL)
@@ -58,3 +59,7 @@ all:
 .PHONY: uvm
 uvm:
 	@make -s all TOP=uvm_tb
+
+.PHONY: layered_tb
+layered_tb:
+	@make -s all TOP=layered_tb
