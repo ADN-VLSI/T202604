@@ -1,4 +1,7 @@
-// @foez-bhai, please add comments describing the purpose of this file and its functions
+// This file defines the apb_uart_apb_seq_item class, which represents a single APB transaction 
+// for the UART peripheral. It includes randomization constraints for valid addresses, 
+// read/write permissions, and data ranges, as well as helper functions for string 
+// representation and display.
 
 `ifndef __GUARD_APB_UART_APB_SEQ_ITEM_SV__
 `define __GUARD_APB_UART_APB_SEQ_ITEM_SV__ 0
