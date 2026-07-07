@@ -1,4 +1,7 @@
-// @foez-bhai, add commnents describing this file and its functions
+// This file defines the apb_uart_uart_seq_item class, which represents a transaction item 
+// for the APB UART interface. It encapsulates randomized data and configuration settings 
+// such as baud rate, parity, and stop bits, providing constraints for valid stimulus 
+// generation and helper functions for string representation and display.
 
 `ifndef __GUARD_APB_UART_UART_SEQ_ITEM_SV__
 `define __GUARD_APB_UART_UART_SEQ_ITEM_SV__ 0
@@ -69,3 +72,4 @@ class apb_uart_uart_seq_item;
 endclass
 
 `endif
+
