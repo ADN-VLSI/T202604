@@ -1,4 +1,6 @@
-// @foez-bhai, add commnents describing this file and its functions
+// This file defines the apb_uart_uart_rsp_item class, which extends the base sequence item
+// to include response-specific fields such as the slave error (slverr) signal.
+// It provides methods to convert transaction details to strings and display them for verification.
 
 `ifndef __GUARD_APB_UART_UART_RSP_ITEM_SV__
 `define __GUARD_APB_UART_UART_RSP_ITEM_SV__ 0

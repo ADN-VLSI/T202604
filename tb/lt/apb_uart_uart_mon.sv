@@ -1,4 +1,9 @@
-// @foez-bhai, add commnents describing this file and its functions
+/*
+ * File: apb_uart_uart_mon.sv
+ * Description: This file defines the apb_uart_uart_mon class, which acts as a 
+ * monitor for the UART interface. It captures transactions from the physical 
+ * interface and pushes them into a mailbox for further analysis or verification.
+ */
 
 `ifndef __GUARD_APB_UART_UART_MON_SV__
 `define __GUARD_APB_UART_UART_MON_SV__ 0

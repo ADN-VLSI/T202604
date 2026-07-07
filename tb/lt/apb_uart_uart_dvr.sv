@@ -1,4 +1,6 @@
-// @foez-bhai, add commnents describing this file and its functions
+// This file defines the apb_uart_uart_dvr class, which acts as a driver for the UART interface.
+// It is responsible for receiving sequence items from a mailbox and executing the corresponding
+// read or write operations on the physical UART interface.
 
 `ifndef __GUARD_APB_UART_UART_DVR_SV__
 `define __GUARD_APB_UART_UART_DVR_SV__ 0

@@ -1,4 +1,7 @@
-// @foez-bhai, add commnents describing this file and its functions
+// This file defines the apb_uart_apb_mon class, which serves as a monitor for the APB interface.
+// It captures APB bus transactions (reads and writes) from the physical interface and 
+// encapsulates them into apb_uart_apb_rsp_item objects, which are then pushed to a mailbox 
+// for further analysis or verification.
 
 `ifndef __GUARD_APB_UART_APB_MON_SV__
 `define __GUARD_APB_UART_APB_MON_SV__ 0
