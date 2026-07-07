@@ -25,7 +25,9 @@ class apb_uart_uart_seq_item;
 
   constraint data_c {
     if (!allow_invisible_chars) {data inside {10, [32 : 126]};}
-    data < (2 ** data_bits);
+    if (data_bits == 5) {data inside {[0 : 31]};}   // Foinni solution
+    if (data_bits == 6) {data inside {[0 : 63]};}   // Foinni solution
+    if (data_bits == 7) {data inside {[0 : 127]}};  // Foinni solution
   }
 
   constraint baud_rate_c {

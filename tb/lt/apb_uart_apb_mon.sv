@@ -35,7 +35,7 @@ class apb_uart_apb_mon;
         logic [DATA_WIDTH/8-1:0] write_strobe;
         logic [DATA_WIDTH-1:0] read_data;
         logic slverr;
-        intf.get_transaction( direction, address, write_data, write_strobe, read_data, slverr);
+        intf.get_transaction(direction, address, write_data, write_strobe, read_data, slverr);
         item = new();
         item.write = direction;
         item.addr  = address;

@@ -70,9 +70,9 @@ module layered_tb;
 
     begin  // T
       apb_uart_uart_seq_item item;
-      repeat (10) begin
+      for (int i = 0; i < 10; i++) begin
         item = new();
-        item.randomize();
+        item.randomize() with {if (i==3) item.baud_rate == 9600;};
         item.display();
       end
       $finish;
