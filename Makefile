@@ -7,17 +7,35 @@ LOG_DIR:=$(ROOT_DIR)/log
 TN := default
 TL := 50
 
+GUI := 0
+
+VCS = vcs
+SIMV = ./simv
+
 EW_HL = | grep -iE "error:|warning:|" --color=auto
 
-GUI := 0
-ifeq ($(GUI),0)
-	XSIM_CMD += -runall
-else
-	XSIM_CMD += -gui --autoloadwcfg --view ../wcfg/snap_$(TOP).wcfg
-endif
+VCS_FLAGS += -full64
+VCS_FLAGS += -sverilog
+VCS_FLAGS += -timescale=1ns/1ps
+VCS_FLAGS += -debug_access+all
+VCS_FLAGS += -kdb
+VCS_FLAGS += -lca
 
-XSIM_CMD += --testplusarg TEST_NAME=$(TN)
-XSIM_CMD += --testplusarg TEST_LEN=$(TL)
+VCS_FLAGS += +define+DEFAULT_ADDR_WIDTH=5
+VCS_FLAGS += +define+DEFAULT_DATA_WIDTH=32
+
+VCS_FLAGS += +incdir+$(ROOT_DIR)/include
+VCS_FLAGS += +incdir+$(ROOT_DIR)/tb
+
+# Uncomment if your VCS installation does not automatically provide UVM
+# VCS_FLAGS += -ntb_opts uvm
+
+SIM_FLAGS += +TEST_NAME=$(TN)
+SIM_FLAGS += +TEST_LEN=$(TL)
+
+ifeq ($(GUI),1)
+SIM_FLAGS += -gui
+endif
 
 $(BUILD_DIR) $(LOG_DIR):
 	@mkdir -p $@
@@ -34,27 +52,30 @@ ifeq ($(TOP),)
 endif
 	@make -s clean
 	@make -s $(BUILD_DIR) $(LOG_DIR)
-	@echo "-sv" > $(BUILD_DIR)/xvlog_cmd
-	@echo "-d DEFAULT_ADDR_WIDTH=5" >> $(BUILD_DIR)/xvlog_cmd
-	@echo "-d DEFAULT_DATA_WIDTH=32" >> $(BUILD_DIR)/xvlog_cmd
-	@echo "-i $(ROOT_DIR)/include" >> $(BUILD_DIR)/xvlog_cmd
-	@echo "-i $(ROOT_DIR)/tb" >> $(BUILD_DIR)/xvlog_cmd
-	@echo "$(shell find $(ROOT_DIR)/submodule/apb-uart/intf -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
-	@echo "$(shell find $(ROOT_DIR)/source -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
-	@echo "$(shell find $(ROOT_DIR)/tb -maxdepth 1 -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
-	@echo "-L uvm" >> $(BUILD_DIR)/xvlog_cmd
-	@cd $(BUILD_DIR) && xvlog -f $(BUILD_DIR)/xvlog_cmd -log $(LOG_DIR)/xvlog_$(shell date +%Y%m%d_%H%M%S).log $(EW_HL)
-	@cd $(BUILD_DIR) && xelab -debug all $(TOP) -s snap_$(TOP) -log $(LOG_DIR)/xelab_$(TOP)_$(shell date +%Y%m%d_%H%M%S).log $(EW_HL)
+
+	@echo "$(shell find $(ROOT_DIR)/submodule/apb-uart/intf -name "*.sv")" > $(BUILD_DIR)/filelist.f
+	@echo "$(shell find $(ROOT_DIR)/source -name "*.sv")" >> $(BUILD_DIR)/filelist.f
+	@echo "$(shell find $(ROOT_DIR)/tb -maxdepth 1 -name "*.sv")" >> $(BUILD_DIR)/filelist.f
+
+	@cd $(BUILD_DIR) && \
+	$(VCS) $(VCS_FLAGS) \
+	-top $(TOP) \
+	-f filelist.f \
+	-o simv \
+	-l $(LOG_DIR)/vcs_$(TOP)_$(shell date +%Y%m%d_%H%M%S).log \
+	$(EW_HL)
 
 .PHONY: sim
 sim:
-	@echo "$(XSIM_CMD)" > $(BUILD_DIR)/xsim_cmd
-	@cd $(BUILD_DIR) && xsim snap_$(TOP) -f $(BUILD_DIR)/xsim_cmd -log $(LOG_DIR)/xsim_$(TOP)_$(shell date +%Y%m%d_%H%M%S).log $(EW_HL)
+	@cd $(BUILD_DIR) && \
+	$(SIMV) $(SIM_FLAGS) \
+	-l $(LOG_DIR)/simv_$(TOP)_$(shell date +%Y%m%d_%H%M%S).log \
+	$(EW_HL)
 
 .PHONY: all
 all:
 	@make -s env_build TOP=$(TOP)
-	@make -s sim TOP=$(TOP) TN=$(TN) TL=$(TL)
+	@make -s sim TOP=$(TOP) TN=$(TN) TL=$(TL) GUI=$(GUI)
 
 .PHONY: uvm
 uvm:
