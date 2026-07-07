@@ -1,8 +1,12 @@
 module layered_tb;
 
+  `include "lt/apb_uart_apb_dvr.sv"
+  `include "lt/apb_uart_apb_mon.sv"
+
   `include "lt/apb_uart_apb_seq_item.sv"
   `include "lt/apb_uart_apb_rsp_item.sv"
-  `include "lt/apb_uart_apb_dvr.sv"
+
+  `include "lt/apb_uart_uart_seq_item.sv"
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -28,9 +32,11 @@ module layered_tb;
   // Classes
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  mailbox #(apb_uart_apb_seq_item) apb_dvr_mbx = new(1);
+  mailbox #(apb_uart_apb_seq_item) apb_dvr_mbx;
+  mailbox #(apb_uart_apb_rsp_item) apb_mon_mbx;
 
   apb_uart_apb_dvr apb_dvr;
+  apb_uart_apb_mon apb_mon;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // DUT
@@ -62,26 +68,81 @@ module layered_tb;
     $dumpvars(0, layered_tb);
     $timeformat(-6, 0, "us");
 
-    apb_dvr = new();
-    apb_dvr.connect_intf(apb_intf);
-    apb_dvr.connect_mbx(apb_dvr_mbx);
+    begin  // T
+      apb_uart_uart_seq_item item;
+      repeat (10) begin
+        item = new();
+        item.randomize();
+        item.display();
+      end
+      $finish;
+    end
 
+    ///////////////////////////////////////////////////////////////////////////
+    // BUILD PHASE
+    ///////////////////////////////////////////////////////////////////////////
+
+    apb_dvr = new();
+    apb_mon = new();
+    apb_dvr_mbx = new(1);
+    apb_mon_mbx = new();
+
+    ///////////////////////////////////////////////////////////////////////////
+    // CONNECT PHASE
+    ///////////////////////////////////////////////////////////////////////////
+
+    apb_dvr.connect_intf(apb_intf);
+    apb_mon.connect_intf(apb_intf);
+    apb_dvr.connect_mbx(apb_dvr_mbx);
+    apb_mon.connect_mbx(apb_mon_mbx);
+
+    ///////////////////////////////////////////////////////////////////////////
+    // RUN PHASE : RESET
+    ///////////////////////////////////////////////////////////////////////////
+
+    // Reset and enable clock
     ctrl_intf.apply_reset();
     apb_intf.reset();
     uart_intf.reset();
     ctrl_intf.enable_clock();
 
+    // Enable the APB driver and monitor
     apb_dvr.run();
+    apb_mon.run();
+
+    ///////////////////////////////////////////////////////////////////////////
+    // RUN PHASE : CONFIGURE
+    ///////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////////
+    // RUN PHASE : MAIN
+    ///////////////////////////////////////////////////////////////////////////
 
     repeat (10) begin
       apb_uart_apb_seq_item item;
       item = new();
       item.randomize();
-      item.display();
       apb_dvr_mbx.put(item);
-      while (apb_dvr_mbx.num()) begin
-        @(posedge ctrl_intf.clk_i);
-      end
+    end
+
+    ///////////////////////////////////////////////////////////////////////////
+    // RUN PHASE : SHUTDOWN
+    ///////////////////////////////////////////////////////////////////////////
+
+    while (apb_dvr_mbx.num()) begin
+      @(posedge ctrl_intf.clk_i);
+    end
+
+    ///////////////////////////////////////////////////////////////////////////
+    // REPORT PHASE
+    ///////////////////////////////////////////////////////////////////////////
+
+    $display("APB Monitor received %0d items", apb_mon_mbx.num());
+
+    while (apb_mon_mbx.num()) begin
+      apb_uart_apb_rsp_item item;
+      apb_mon_mbx.get(item);
+      item.display();
     end
 
     #1us;
