@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="snap_layered_tb.wdb" id="1">
+         <top_modules>
+            <top_module name="\$unit_apb_if_sv_2394819271 " />
+            <top_module name="layered_tb" />
+            <top_module name="std" />
+            <top_module name="uart_pkg" />
+            <top_module name="uvm_pkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="1,141.650001 us"></ZoomEndTime>
+      <Cursor1Time time="1.044000 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="231"></NameColumnWidth>
+      <ValueColumnWidth column_width="133"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="5" />
+   <wvobject fp_name="group12" type="group">
+      <obj_property name="label">APB</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/layered_tb/apb_intf/arst_ni" type="logic">
+         <obj_property name="ElementShortName">arst_ni</obj_property>
+         <obj_property name="ObjectShortName">arst_ni</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/clk_i" type="logic">
+         <obj_property name="ElementShortName">clk_i</obj_property>
+         <obj_property name="ObjectShortName">clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/psel" type="logic">
+         <obj_property name="ElementShortName">psel</obj_property>
+         <obj_property name="ObjectShortName">psel</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/penable" type="logic">
+         <obj_property name="ElementShortName">penable</obj_property>
+         <obj_property name="ObjectShortName">penable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/paddr" type="array">
+         <obj_property name="ElementShortName">paddr[4:0]</obj_property>
+         <obj_property name="ObjectShortName">paddr[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/pwrite" type="logic">
+         <obj_property name="ElementShortName">pwrite</obj_property>
+         <obj_property name="ObjectShortName">pwrite</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/pwdata" type="array">
+         <obj_property name="ElementShortName">pwdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pwdata[31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/pstrb" type="array">
+         <obj_property name="ElementShortName">pstrb[3:0]</obj_property>
+         <obj_property name="ObjectShortName">pstrb[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/pready" type="logic">
+         <obj_property name="ElementShortName">pready</obj_property>
+         <obj_property name="ObjectShortName">pready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/prdata" type="array">
+         <obj_property name="ElementShortName">prdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">prdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/apb_intf/pslverr" type="logic">
+         <obj_property name="ElementShortName">pslverr</obj_property>
+         <obj_property name="ObjectShortName">pslverr</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group15" type="group">
+      <obj_property name="label">UART</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/layered_tb/uart_intf/tx" type="logic">
+         <obj_property name="ElementShortName">tx</obj_property>
+         <obj_property name="ObjectShortName">tx</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/uart_intf/rx" type="logic">
+         <obj_property name="ElementShortName">rx</obj_property>
+         <obj_property name="ObjectShortName">rx</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group30" type="group">
+      <obj_property name="label">TRANSMITTER</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/arst_ni" type="logic">
+         <obj_property name="ElementShortName">arst_ni</obj_property>
+         <obj_property name="ObjectShortName">arst_ni</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/clk_i" type="logic">
+         <obj_property name="ElementShortName">clk_i</obj_property>
+         <obj_property name="ObjectShortName">clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/parity_en_i" type="logic">
+         <obj_property name="ElementShortName">parity_en_i</obj_property>
+         <obj_property name="ObjectShortName">parity_en_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/parity_type_i" type="logic">
+         <obj_property name="ElementShortName">parity_type_i</obj_property>
+         <obj_property name="ObjectShortName">parity_type_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/second_stop_i" type="logic">
+         <obj_property name="ElementShortName">second_stop_i</obj_property>
+         <obj_property name="ObjectShortName">second_stop_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/data_i" type="array">
+         <obj_property name="ElementShortName">data_i[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_i[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/data_i" type="array">
+         <obj_property name="ElementShortName">data_i[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_i[7:0]</obj_property>
+         <obj_property name="Radix">ASCIIRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/valid_i" type="logic">
+         <obj_property name="ElementShortName">valid_i</obj_property>
+         <obj_property name="ObjectShortName">valid_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/ready_o" type="logic">
+         <obj_property name="ElementShortName">ready_o</obj_property>
+         <obj_property name="ObjectShortName">ready_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_transmitter/tx_o" type="logic">
+         <obj_property name="ElementShortName">tx_o</obj_property>
+         <obj_property name="ObjectShortName">tx_o</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group39" type="group">
+      <obj_property name="label">RECEIVER</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/layered_tb/u_dut/u_receiver/arst_ni" type="logic">
+         <obj_property name="ElementShortName">arst_ni</obj_property>
+         <obj_property name="ObjectShortName">arst_ni</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_receiver/clk_i" type="logic">
+         <obj_property name="ElementShortName">clk_i</obj_property>
+         <obj_property name="ObjectShortName">clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_receiver/parity_en_i" type="logic">
+         <obj_property name="ElementShortName">parity_en_i</obj_property>
+         <obj_property name="ObjectShortName">parity_en_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_receiver/parity_type_i" type="logic">
+         <obj_property name="ElementShortName">parity_type_i</obj_property>
+         <obj_property name="ObjectShortName">parity_type_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_receiver/second_stop_i" type="logic">
+         <obj_property name="ElementShortName">second_stop_i</obj_property>
+         <obj_property name="ObjectShortName">second_stop_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_receiver/data_o" type="array">
+         <obj_property name="ElementShortName">data_o[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_o[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_receiver/valid_o" type="logic">
+         <obj_property name="ElementShortName">valid_o</obj_property>
+         <obj_property name="ObjectShortName">valid_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_receiver/rx_i" type="logic">
+         <obj_property name="ElementShortName">rx_i</obj_property>
+         <obj_property name="ObjectShortName">rx_i</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group99" type="group">
+      <obj_property name="label">REG IF</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/arst_ni" type="logic">
+         <obj_property name="ElementShortName">arst_ni</obj_property>
+         <obj_property name="ObjectShortName">arst_ni</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/clk_i" type="logic">
+         <obj_property name="ElementShortName">clk_i</obj_property>
+         <obj_property name="ObjectShortName">clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/addr_i" type="array">
+         <obj_property name="ElementShortName">addr_i[4:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_i[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/wdata_i" type="array">
+         <obj_property name="ElementShortName">wdata_i[31:0]</obj_property>
+         <obj_property name="ObjectShortName">wdata_i[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/we_i" type="logic">
+         <obj_property name="ElementShortName">we_i</obj_property>
+         <obj_property name="ObjectShortName">we_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/re_i" type="logic">
+         <obj_property name="ElementShortName">re_i</obj_property>
+         <obj_property name="ObjectShortName">re_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/rdata_o" type="array">
+         <obj_property name="ElementShortName">rdata_o[31:0]</obj_property>
+         <obj_property name="ObjectShortName">rdata_o[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/error_o" type="logic">
+         <obj_property name="ElementShortName">error_o</obj_property>
+         <obj_property name="ObjectShortName">error_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_uart_en" type="logic">
+         <obj_property name="ElementShortName">reg_uart_en</obj_property>
+         <obj_property name="ObjectShortName">reg_uart_en</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_tx_flush" type="logic">
+         <obj_property name="ElementShortName">reg_tx_flush</obj_property>
+         <obj_property name="ObjectShortName">reg_tx_flush</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_rx_flush" type="logic">
+         <obj_property name="ElementShortName">reg_rx_flush</obj_property>
+         <obj_property name="ObjectShortName">reg_rx_flush</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_clk_div" type="array">
+         <obj_property name="ElementShortName">reg_clk_div[11:0]</obj_property>
+         <obj_property name="ObjectShortName">reg_clk_div[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_parity_en" type="logic">
+         <obj_property name="ElementShortName">reg_parity_en</obj_property>
+         <obj_property name="ObjectShortName">reg_parity_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_parity_type" type="logic">
+         <obj_property name="ElementShortName">reg_parity_type</obj_property>
+         <obj_property name="ObjectShortName">reg_parity_type</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_second_stop_bit" type="logic">
+         <obj_property name="ElementShortName">reg_second_stop_bit</obj_property>
+         <obj_property name="ObjectShortName">reg_second_stop_bit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_tx_count" type="array">
+         <obj_property name="ElementShortName">reg_tx_count[9:0]</obj_property>
+         <obj_property name="ObjectShortName">reg_tx_count[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_rx_count" type="array">
+         <obj_property name="ElementShortName">reg_rx_count[9:0]</obj_property>
+         <obj_property name="ObjectShortName">reg_rx_count[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_tx_data" type="array">
+         <obj_property name="ElementShortName">reg_tx_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">reg_tx_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_tx_data_valid" type="logic">
+         <obj_property name="ElementShortName">reg_tx_data_valid</obj_property>
+         <obj_property name="ObjectShortName">reg_tx_data_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_tx_data_ready" type="logic">
+         <obj_property name="ElementShortName">reg_tx_data_ready</obj_property>
+         <obj_property name="ObjectShortName">reg_tx_data_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_rx_data" type="array">
+         <obj_property name="ElementShortName">reg_rx_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">reg_rx_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_rx_data_valid" type="logic">
+         <obj_property name="ElementShortName">reg_rx_data_valid</obj_property>
+         <obj_property name="ObjectShortName">reg_rx_data_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/reg_rx_data_ready" type="logic">
+         <obj_property name="ElementShortName">reg_rx_data_ready</obj_property>
+         <obj_property name="ObjectShortName">reg_rx_data_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/wr_error" type="logic">
+         <obj_property name="ElementShortName">wr_error</obj_property>
+         <obj_property name="ObjectShortName">wr_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/layered_tb/u_dut/u_regif/rd_error" type="logic">
+         <obj_property name="ElementShortName">rd_error</obj_property>
+         <obj_property name="ObjectShortName">rd_error</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

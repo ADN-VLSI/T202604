@@ -54,12 +54,12 @@ sim:
 .PHONY: all
 all:
 	@make -s env_build TOP=$(TOP)
-	@make -s sim TOP=$(TOP) TN=$(TN) TL=$(TL)
+	@make -s sim TOP=$(TOP) TN=$(TN) TL=$(TL) GUI=$(GUI)
 
 .PHONY: uvm
 uvm:
-	@make -s all TOP=uvm_tb
+	@make -s all TOP=uvm_tb TN=$(TN) TL=$(TL) GUI=$(GUI)
 
 .PHONY: layered_tb
 layered_tb:
-	@make -s all TOP=layered_tb
+	@make -s all TOP=layered_tb TN=$(TN) TL=$(TL) GUI=$(GUI)

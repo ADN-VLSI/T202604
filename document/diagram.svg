@@ -35,7 +35,7 @@
   <!-- APB domain (left) -->
   <rect x="18"  y="78" width="330" height="425" fill="#e3f2fd" rx="8" opacity="0.55"/>
   <text x="183" y="97" text-anchor="middle" font-size="12" fill="#1565c0" font-weight="600">
-    APB Clock Domain — 300 MHz
+    APB Clock Domain — 100 MHz
   </text>
 
   <!-- UART domain (right) — no top label here -->
@@ -232,7 +232,7 @@
 
   <!-- second row -->
   <text x="28"  y="549" font-size="11" fill="#1565c0">■</text>
-  <text x="41"  y="549" font-size="11" fill="#555">APB Domain (300 MHz)</text>
+  <text x="41"  y="549" font-size="11" fill="#555">APB Domain (100 MHz)</text>
   <text x="200" y="549" font-size="11" fill="#e65100">■</text>
   <text x="213" y="549" font-size="11" fill="#555">UART Domain (Less Clock Speed than APB)</text>
 
