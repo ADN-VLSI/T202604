@@ -31,18 +31,26 @@ class apb_uart_uart_mon;
     fork
       forever begin
         apb_uart_uart_rsp_item item;
-        logic direction;
-        logic [ADDR_WIDTH-1:0] address;
-        logic [DATA_WIDTH-1:0] write_data;
-        logic [DATA_WIDTH/8-1:0] write_strobe;
-        logic [DATA_WIDTH-1:0] read_data;
-        logic slverr;
-        intf.get_transaction( direction, address, write_data, write_strobe, read_data, slverr);
         item = new();
-        item.write = direction;
-        item.addr  = address;
-        item.data  = direction ? write_data : read_data;
-        item.slverr = slverr;
+        intf.recv_rx(item.data, item.parity_bit);
+        item.dut_2_tb        = 1;
+        item.baud_rate       = intf.BAUD_RATE;
+        item.parity_enable   = intf.PARITY_ENABLE;
+        item.parity_type     = intf.PARITY_TYPE;
+        item.second_stop_bit = intf.SECOND_STOP_BIT;
+        item.data_bits       = intf.DATA_BITS;
+        mbx.put(item);
+      end
+      forever begin
+        apb_uart_uart_rsp_item item;
+        item = new();
+        intf.recv_tx(item.data, item.parity_bit);
+        item.dut_2_tb        = 0;
+        item.baud_rate       = intf.BAUD_RATE;
+        item.parity_enable   = intf.PARITY_ENABLE;
+        item.parity_type     = intf.PARITY_TYPE;
+        item.second_stop_bit = intf.SECOND_STOP_BIT;
+        item.data_bits       = intf.DATA_BITS;
         mbx.put(item);
       end
     join_none

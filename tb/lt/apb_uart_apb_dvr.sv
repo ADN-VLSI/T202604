@@ -31,8 +31,8 @@ class apb_uart_apb_dvr;
         mbx.peek(item);
         if (item.write) intf.write(item.addr, item.data);
         else            intf.read(item.addr, item.data);
-          mbx.get(item);
-        end
+        mbx.get(item);
+      end
     join_none
   endtask
 

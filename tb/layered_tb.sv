@@ -2,11 +2,16 @@ module layered_tb;
 
   `include "lt/apb_uart_apb_dvr.sv"
   `include "lt/apb_uart_apb_mon.sv"
+  `include "lt/apb_uart_uart_dvr.sv"
+  `include "lt/apb_uart_uart_mon.sv"
+
+  `include "lt/apb_uart_scbd.sv"
+  `include "lt/uart_cfg.sv"
 
   `include "lt/apb_uart_apb_seq_item.sv"
   `include "lt/apb_uart_apb_rsp_item.sv"
-
   `include "lt/apb_uart_uart_seq_item.sv"
+  `include "lt/apb_uart_uart_rsp_item.sv"
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Parameters
@@ -59,8 +64,18 @@ module layered_tb;
   mailbox #(apb_uart_apb_seq_item) apb_dvr_mbx;
   mailbox #(apb_uart_apb_rsp_item) apb_mon_mbx;
 
+  mailbox #(apb_uart_uart_seq_item) uart_dvr_mbx;
+  mailbox #(apb_uart_uart_rsp_item) uart_mon_mbx;
+
+  mailbox #(uart_cfg) uart_cfg_mbx;
+
   apb_uart_apb_dvr apb_dvr;
   apb_uart_apb_mon apb_mon;
+
+  apb_uart_uart_dvr uart_dvr;
+  apb_uart_uart_mon uart_mon;
+
+  apb_uart_scbd    scbd;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // DUT
@@ -81,8 +96,6 @@ module layered_tb;
       .uart_tx_o(uart_intf.rx),
       .uart_rx_i(uart_intf.tx)
   );
-
-  assign uart_intf.tx = uart_intf.rx;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Methods
@@ -155,27 +168,23 @@ module layered_tb;
       testlength = 10;
     end
 
-    ////////////////////////////////////
-    // // TODO REMOVE
-    ////////////////////////////////////
-    // begin  
-    //   apb_uart_uart_seq_item item;
-    //   for (int i = 0; i < 10; i++) begin
-    //     item = new();
-    //     item.randomize() with {if (i==3) item.baud_rate == 9600;};
-    //     item.display();
-    //   end
-    //   $finish;
-    // end
-
     ///////////////////////////////////////////////////////////////////////////
     // BUILD PHASE
     ///////////////////////////////////////////////////////////////////////////
 
     apb_dvr = new();
     apb_mon = new();
+
+    uart_dvr = new();
+    uart_mon = new();
+
+    scbd    = new();
+
     apb_dvr_mbx = new(1);
     apb_mon_mbx = new();
+    uart_cfg_mbx = new();
+    uart_dvr_mbx = new(1);
+    uart_mon_mbx = new();
 
     ///////////////////////////////////////////////////////////////////////////
     // CONNECT PHASE
@@ -183,8 +192,18 @@ module layered_tb;
 
     apb_dvr.connect_intf(apb_intf);
     apb_mon.connect_intf(apb_intf);
+    uart_dvr.connect_intf(uart_intf);
+    uart_mon.connect_intf(uart_intf);
+
     apb_dvr.connect_mbx(apb_dvr_mbx);
     apb_mon.connect_mbx(apb_mon_mbx);
+    uart_dvr.connect_mbx(uart_dvr_mbx);
+    uart_mon.connect_mbx(uart_mon_mbx);
+
+    scbd.connect_apb_mbx(apb_mon_mbx);
+    scbd.connect_uart_mbx(uart_mon_mbx);
+
+    scbd.connect_uart_cfg_mbx(uart_cfg_mbx);
 
     ///////////////////////////////////////////////////////////////////////////
     // RUN PHASE : RESET
@@ -199,6 +218,25 @@ module layered_tb;
     // Enable the APB driver and monitor
     apb_dvr.run();
     apb_mon.run();
+    uart_dvr.run();
+    uart_mon.run();
+    scbd.run();
+
+    fork
+      uart_cfg cfg;
+      forever begin
+        uart_cfg_mbx.get(cfg);
+        uart_intf.BAUD_RATE = cfg.BAUD_RATE;
+        uart_intf.PARITY_ENABLE = cfg.PARITY_ENABLE;
+        uart_intf.PARITY_TYPE = cfg.PARITY_TYPE;
+        uart_intf.SECOND_STOP_BIT = cfg.SECOND_STOP_BIT;
+        uart_intf.DATA_BITS = cfg.DATA_BITS;
+        $display(
+            "UART RECONFIGURED AT: BAUD_RATE=%0d, PARITY_ENABLE=%0d, PARITY_TYPE=%0d, SECOND_STOP_BIT=%0d, DATA_BITS=%0d",
+            uart_intf.BAUD_RATE, uart_intf.PARITY_ENABLE, uart_intf.PARITY_TYPE,
+            uart_intf.SECOND_STOP_BIT, uart_intf.DATA_BITS);
+      end
+    join_none
 
     ///////////////////////////////////////////////////////////////////////////
     // RUN PHASE : CONFIGURE
@@ -206,6 +244,7 @@ module layered_tb;
 
     // Configure the UART with desired settings (baud rate, no parity, even parity, no second stop bit)
     uart_init_sequence(115200, 0, 0, 0);
+    apb_intf.wait_till_idle();
 
     ///////////////////////////////////////////////////////////////////////////
     // RUN PHASE : MAIN
@@ -237,21 +276,14 @@ module layered_tb;
     // RUN PHASE : SHUTDOWN
     ///////////////////////////////////////////////////////////////////////////
 
-    while (apb_dvr_mbx.num()) begin
-      @(posedge ctrl_intf.clk_i);
-    end
+    apb_intf.wait_till_idle();
+    uart_intf.wait_till_idle();
 
     ///////////////////////////////////////////////////////////////////////////
     // REPORT PHASE
     ///////////////////////////////////////////////////////////////////////////
 
-    $display("APB Monitor received %0d items", apb_mon_mbx.num());
-
-    while (apb_mon_mbx.num()) begin
-      apb_uart_apb_rsp_item item;
-      apb_mon_mbx.get(item);
-      item.display();
-    end
+    scbd.report();
 
     #1us;
     $finish;

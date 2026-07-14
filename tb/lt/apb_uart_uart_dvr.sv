@@ -29,10 +29,9 @@ class apb_uart_uart_dvr;
       forever begin
         apb_uart_uart_seq_item item;
         mbx.peek(item);
-        if (item.write) intf.write(item.addr, item.data);
-        else            intf.read(item.addr, item.data);
-          mbx.get(item);
-        end
+        intf.send_tx(item.data);
+        mbx.get(item);
+      end
     join_none
   endtask
 
