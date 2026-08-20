@@ -40,6 +40,7 @@ endif
 	@echo "-i $(ROOT_DIR)/include" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "-i $(ROOT_DIR)/tb" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "$(shell find $(ROOT_DIR)/submodule/apb-uart/intf -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "$(shell find $(ROOT_DIR)/interface -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "$(shell find $(ROOT_DIR)/source -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "$(shell find $(ROOT_DIR)/tb -maxdepth 1 -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "-L uvm" >> $(BUILD_DIR)/xvlog_cmd
@@ -63,3 +64,7 @@ uvm:
 .PHONY: layered_tb
 layered_tb:
 	@make -s all TOP=layered_tb TN=$(TN) TL=$(TL) GUI=$(GUI)
+
+.PHONY: at
+at:
+	@make -s all TOP=addr_uvm_tb TN=$(TN) TL=$(TL) GUI=$(GUI)
