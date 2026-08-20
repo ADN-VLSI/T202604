@@ -7,19 +7,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-interface data_intf (
+interface data_intf #(
+    parameter int WIDTH = 32
+) (
     input logic arst_ni,  // Active low reset signal
     input logic clk_i     // Clock signal
 );
 
   // --- Interface Signals ---
   // These signals form the core of the handshake protocol.
-  logic [127:0] data;
-  logic         valid;
-  logic         ready;
+  logic [WIDTH-1:0] data;
+  logic             valid;
+  logic             ready;
 
   // Send transaction data.
-  task automatic send_data(input logic [127:0] req_data);
+  task automatic send_data(input logic [WIDTH-1:0] req_data);
     data  <= req_data;
     valid <= 1'b1;
     do begin
@@ -29,7 +31,7 @@ interface data_intf (
   endtask
 
   // Receive transaction data.
-  task automatic recv_data(output logic [127:0] rsp_data);
+  task automatic recv_data(output logic [WIDTH-1:0] rsp_data);
     ready <= 1'b1;
     do begin
       @(posedge clk_i);
@@ -39,7 +41,7 @@ interface data_intf (
   endtask
 
   // Monitor transaction data.
-  task automatic look_data(output logic [127:0] rsp_data);
+  task automatic look_data(output logic [WIDTH-1:0] rsp_data);
     do begin
       @(posedge clk_i);
     end while (arst_ni !== '1 || valid !== '1 || ready !== '1);

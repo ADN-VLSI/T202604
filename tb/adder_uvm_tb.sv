@@ -2,7 +2,9 @@
 
 import uvm_pkg::*;
 
-module addr_uvm_tb;
+`include "at/test/base_test.sv"
+
+module adder_uvm_tb;
 
   // Display messages at the very beginning and end of the simulation for clarity.
   initial $display("\033[7;38m TEST STARTED \033[0m");
@@ -22,6 +24,7 @@ module addr_uvm_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   string test_name;
+  int    test_len;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Interfaces
@@ -32,17 +35,23 @@ module addr_uvm_tb;
 
   // Data interfaces for the two inputs (opa, opb) and the output (sum).
   // These interfaces bundle the data, valid, and ready signals.
-  data_intf intf_opa (
+  data_intf #(
+      .WIDTH(WIDTH)
+  ) intf_opa (
       .arst_ni(ctrl_if.arst_n),
       .clk_i  (ctrl_if.clk)
   );
 
-  data_intf intf_opb (
+  data_intf #(
+      .WIDTH(WIDTH)
+  ) intf_opb (
       .arst_ni(ctrl_if.arst_n),
       .clk_i  (ctrl_if.clk)
   );
 
-  data_intf intf_sum (
+  data_intf #(
+      .WIDTH(WIDTH)
+  ) intf_sum (
       .arst_ni(ctrl_if.arst_n),
       .clk_i  (ctrl_if.clk)
   );
@@ -85,14 +94,22 @@ module addr_uvm_tb;
     $timeformat(-9, 0, "ns", 0);
 
     // This sets up the VCD (Value Change Dump) file for waveform viewing.
-    $dumpfile("addr_uvm_tb.vcd");
-    $dumpvars(0, addr_uvm_tb);
+    $dumpfile("adder_uvm_tb.vcd");
+    $dumpvars(0, adder_uvm_tb);
 
-    // Get the test name from the command line arguments (+test_name=<your_test>).
+    // Get the test name from the command line arguments (Tn=<your_test>).
     // If not provided, the simulation will exit with a fatal error.
     if (!$value$plusargs("TEST_NAME=%s", test_name)) begin
       $fatal(1, "No test name provided. Use make ... TN=<test_name> to specify a test.");
     end
+
+    // Get the test length from the command line arguments (TL=<length>).
+    // If not provided, default to 1000 cycles.
+    if (!$value$plusargs("TEST_LEN=%d", test_len)) begin
+      test_len = 1000;
+    end
+
+    if (test_name == "default") test_name = "base_test";
 
     // Use the uvm_config_db to pass configuration values down the hierarchy.
     // These values can be retrieved by any component in the test environment.
@@ -100,18 +117,21 @@ module addr_uvm_tb;
     // Pass DUT parameters.
     uvm_config_db#(int)::set(uvm_root::get(), "dut", "data_width", WIDTH);
 
+    // TEST PARAMS
+    uvm_config_db#(int)::set(uvm_root::get(), "testbench", "test_len", test_len);
+
     // Pass the virtual interfaces to the test environment. This is how the
     // UVM components (driver, monitor) interact with the DUT.
     uvm_config_db#(virtual ctrl_intf)::set(uvm_root::get(), "ctrl", "vif", ctrl_if);
-    uvm_config_db#(virtual data_intf)::set(uvm_root::get(), "opa", "vif", intf_opa);
-    uvm_config_db#(virtual data_intf)::set(uvm_root::get(), "opb", "vif", intf_opb);
-    uvm_config_db#(virtual data_intf)::set(uvm_root::get(), "sum", "vif", intf_sum);
+    uvm_config_db#(virtual data_intf #(.WIDTH(WIDTH)))::set(uvm_root::get(), "env.opa.*", "vif", intf_opa);
+    uvm_config_db#(virtual data_intf #(.WIDTH(WIDTH)))::set(uvm_root::get(), "env.opb.*", "vif", intf_opb);
+    uvm_config_db#(virtual data_intf #(.WIDTH(WIDTH)))::set(uvm_root::get(), "env.sum.*", "vif", intf_sum);
 
     uvm_config_db::dump();
 
-    // // Start the UVM test. This function creates the test component specified
-    // // by 'test_name' and starts the UVM phasing mechanism.
-    // run_test(test_name);
+    // Start the UVM test. This function creates the test component specified
+    // by 'test_name' and starts the UVM phasing mechanism.
+    run_test(test_name);
 
     // End the simulation once the test is complete.
     $finish;

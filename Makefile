@@ -67,4 +67,4 @@ layered_tb:
 
 .PHONY: at
 at:
-	@make -s all TOP=addr_uvm_tb TN=$(TN) TL=$(TL) GUI=$(GUI)
+	@make -s all TOP=adder_uvm_tb TN=$(TN) TL=$(TL) GUI=$(GUI)
