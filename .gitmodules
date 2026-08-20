@@ -1,3 +1,6 @@
 [submodule "submodule/apb-uart"]
 	path = submodule/apb-uart
 	url = https://github.com/ADN-VLSI/old-apb-uart.git
+[submodule "submodule/old-apb-uart"]
+	path = submodule/old-apb-uart
+	url = https://github.com/ADN-VLSI/old-apb-uart.git

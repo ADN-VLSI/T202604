@@ -39,7 +39,7 @@ endif
 	@echo "-d DEFAULT_DATA_WIDTH=32" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "-i $(ROOT_DIR)/include" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "-i $(ROOT_DIR)/tb" >> $(BUILD_DIR)/xvlog_cmd
-	@echo "$(shell find $(ROOT_DIR)/submodule/apb-uart/intf -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
+	@echo "$(shell find $(ROOT_DIR)/submodule/old-apb-uart/intf -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "$(shell find $(ROOT_DIR)/interface -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "$(shell find $(ROOT_DIR)/source -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
 	@echo "$(shell find $(ROOT_DIR)/tb -maxdepth 1 -name "*.sv")" >> $(BUILD_DIR)/xvlog_cmd
